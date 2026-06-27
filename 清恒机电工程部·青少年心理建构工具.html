@@ -1,0 +1,1205 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.5, minimum-scale=0.8">
+  <title>清恒机电工程部·青少年心理建构工具（）</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #2c6e9e;
+      --primary-light: #4a90d9;
+      --primary-dark: #1e3a5f;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+      --radius-lg: 22px;
+      --radius-xl: 28px;
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+      line-height: 1.65;
+      color: var(--text);
+      background: linear-gradient(175deg, #f1f5f9 0%, #ffffff 18%);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+    h1 {
+      font-size: clamp(1.6rem, 5vw, 2.1rem);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.4px;
+      background: linear-gradient(135deg, #1e3a5f 0%, #3b7db5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 750;
+    }
+    h2, h3 { font-weight: 650; color: var(--primary-dark); margin: 0.4rem 0 0.6rem; }
+    p { margin: 0.5rem 0; color: #475569; font-size: 0.95rem; }
+    .muted { color: var(--text-muted); font-size: 0.82rem; line-height: 1.5; }
+    .step-title {
+      font-size: 1.45rem; font-weight: 700; margin: 1rem 0 0.7rem;
+      padding-left: 16px; border-left: 5px solid var(--primary-light);
+      color: var(--primary-dark); background: linear-gradient(90deg, rgba(74,144,217,0.07) 0%, transparent 80%);
+      border-radius: 0 10px 10px 0;
+    }
+    .panel {
+      background: var(--card); border-radius: var(--radius-xl); padding: 1.2rem 1.5rem 1.7rem;
+      margin: 1.2rem 0; box-shadow: var(--shadow-sm), 0 1px 2px rgba(0,0,0,0.02);
+      border: 1px solid #f1f5f9; transition: var(--transition);
+      animation: fadeSlideUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    .panel:hover { box-shadow: var(--shadow-md), 0 1px 4px rgba(0,0,0,0.04); }
+    textarea, .phrase-editor {
+      width: 100%; font-family: inherit; font-size: 0.93rem; padding: 14px 16px;
+      border: 2px solid var(--border); border-radius: 18px; background: #fff;
+      transition: var(--transition); resize: vertical; color: var(--text); line-height: 1.6;
+    }
+    textarea:focus, .phrase-editor:focus-within {
+      border-color: var(--primary-light); outline: none;
+      box-shadow: 0 0 0 5px rgba(74,144,217,0.1), 0 3px 14px rgba(0,0,0,0.04); background: #fefefe;
+    }
+    textarea::placeholder { color: #94a3b8; }
+    .phrase-editor { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; padding: 14px 16px; min-height: 52px; background: #fbfdff; }
+    .token {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px;
+      background: #f8fafc; border-radius: 40px; padding: 8px 16px;
+      border: 2px solid #e2edf9; transition: var(--transition);
+    }
+    .token:focus-within { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(74,144,217,0.06); }
+    .fixed { color: #475569; user-select: none; white-space: nowrap; font-weight: 500; font-size: 0.9rem; }
+    .editable-mid {
+      min-width: 4.5em; border-bottom: 2px dashed #b9d0f0; outline: none;
+      padding: 2px 8px; color: var(--primary-dark); font-weight: 550;
+      transition: var(--transition); border-radius: 5px; font-size: 0.93rem; display: inline-block;
+    }
+    .editable-mid:focus { border-bottom-color: var(--primary-light); background: rgba(74,144,217,0.03); }
+    .editable-mid:empty::before { content: attr(data-placeholder); color: #94a3b8; font-weight: 400; }
+    button {
+      background: #f1f5f9; border: 2px solid transparent; padding: 10px 22px;
+      border-radius: 50px; font-weight: 600; font-size: 0.88rem; cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease;
+      color: #334155; letter-spacing: 0.2px; font-family: inherit; user-select: none; white-space: nowrap;
+    }
+    button:active { transform: scale(0.96); box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important; }
+    button:hover { background: #e2e8f0; }
+    button:focus-visible { outline: 3px solid rgba(74,144,217,0.5); outline-offset: 2px; }
+    .btn-primary {
+      background: linear-gradient(135deg, #4a90d9 0%, #357abd 100%); color: #fff;
+      border-color: transparent; box-shadow: 0 2px 10px rgba(74,144,217,0.25), 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #5a9fe6 0%, #3d7fc4 100%); box-shadow: 0 4px 16px rgba(74,144,217,0.35), 0 1px 4px rgba(0,0,0,0.06); transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(0.96); box-shadow: 0 1px 3px rgba(74,144,217,0.4) !important; }
+    .btn-secondary { background: #ffffff; border: 2px solid #e2e8f0; color: #475569; }
+    .btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; color: #1e293b; }
+    .btn-danger { background: #fff5f5; color: #dc2626; border: 2px solid #fecaca; }
+    .btn-danger:hover { background: #fee2e2; border-color: #fca5a5; }
+    .btn-small { padding: 6px 16px; font-size: 0.78rem; }
+    .hints, .bubbles { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+    .hint, .bubble, .tag {
+      background: #f8fafc; padding: 7px 15px; border-radius: 50px; font-size: 0.8rem;
+      cursor: pointer; transition: var(--transition); border: 2px solid #e2e8f0; color: #475569; font-weight: 500;
+    }
+    .hint:hover, .bubble:hover { background: #eef2ff; border-color: var(--primary-light); color: var(--primary-light); transform: translateY(-1px); }
+    .tag.active { background: var(--primary-light); color: #fff; border-color: var(--primary-light); font-weight: 650; }
+    .output-box, .report-box {
+      background: #fafcfd; border-radius: 18px; padding: 18px; border: 2px solid #eef2f6;
+      white-space: pre-wrap; font-size: 0.88rem; margin: 14px 0; line-height: 1.7;
+      color: #334155; font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    }
+    .report-box { background: linear-gradient(135deg, #fefdf8 0%, #fdfcf5 100%); border-color: #f0ead6; }
+    .success-box {
+      background: linear-gradient(135deg, #f0fdf4 0%, #e6f9ed 100%); border-left: 5px solid var(--success);
+      padding: 16px 20px; border-radius: 16px; color: #166534; margin: 14px 0; font-weight: 500;
+    }
+    .fault-box {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-left: 5px solid var(--danger);
+      padding: 16px 20px; border-radius: 16px; color: #991b1b; font-weight: 500; animation: shake 0.4s ease;
+    }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+    .reference-box {
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%); border-radius: 18px;
+      padding: 14px 20px; font-size: 0.84rem; border: 2px solid #dce5f7; white-space: pre-wrap;
+      color: #334155; margin: 14px 0;
+    }
+    .storage-warning {
+      margin-top: 10px; color: #92400e; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      padding: 10px 16px; border-radius: 14px; font-size: 0.78rem; border: 2px solid #fde68a;
+    }
+    .roadmap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 20px 0 12px; justify-content: space-between; padding: 0 2px; }
+    .milestone { text-align: center; cursor: default; color: #94a3b8; min-width: 64px; font-size: 0.78rem; transition: var(--transition); padding: 4px; position: relative; }
+    .milestone .icon { font-size: 1.9rem; display: block; margin-bottom: 4px; transition: var(--transition); }
+    .milestone.current { color: var(--primary-light); font-weight: 700; transform: scale(1.07); animation: breathe 2s infinite ease-in-out; border-radius: 50%; }
+    @keyframes breathe { 0% { box-shadow: 0 0 0 0 rgba(74,144,217,0.4); } 70% { box-shadow: 0 0 0 10px rgba(74,144,217,0); } 100% { box-shadow: 0 0 0 0 rgba(74,144,217,0); } }
+    .milestone.current .icon { filter: drop-shadow(0 2px 8px rgba(74,144,217,0.35)); }
+    .milestone.done { color: var(--success); cursor: pointer; }
+    .milestone.done:hover { transform: translateY(-3px); color: #16a34a; }
+    .milestone.done::after { content: "✓"; position: absolute; top: -8px; right: -8px; background: #22c55e; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; line-height: 18px; font-weight: bold; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .connector { flex: 1; height: 4px; background: #e2e8f0; border-radius: 4px; min-width: 24px; transition: var(--transition); }
+    .connector.done { background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%); }
+    .tabs { display: flex; gap: 8px; margin: 18px 0 10px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+    .tab {
+      padding: 9px 18px; background: #f8fafc; border-radius: 50px; cursor: pointer;
+      font-size: 0.88rem; font-weight: 550; border: 2px solid #e2e8f0; color: #64748b;
+      transition: var(--transition); white-space: nowrap; flex-shrink: 0;
+    }
+    .tab:hover { border-color: var(--primary-light); color: var(--primary-light); }
+    .tab.active { background: linear-gradient(135deg, #4a90d9 0%, #357abd 100%); color: #fff; border-color: transparent; box-shadow: 0 2px 8px rgba(74,144,217,0.25); }
+    .card { background: #fff; border: 2px solid #eef2f6; border-radius: 18px; padding: 14px 18px; margin-bottom: 10px; cursor: pointer; transition: var(--transition); }
+    .card:hover { border-color: #b9d0f0; background: #fdfeff; box-shadow: 0 2px 12px rgba(74,144,217,0.06); transform: translateY(-1px); }
+    .card-extra { display: none; margin-top: 12px; padding-top: 10px; border-top: 2px solid #f1f5f9; }
+    .card.expanded .card-extra { display: block; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: #fff; border-radius: var(--radius-xl); max-width: 500px; width: 100%; padding: 26px; box-shadow: 0 24px 48px rgba(0,0,0,0.18); max-height: 85vh; overflow-y: auto; }
+    .toast { position: fixed; bottom: 24px; right: 20px; background: linear-gradient(135deg, #1e3a5f 0%, #2c6e9e 100%); color: #fff; padding: 14px 26px; border-radius: 50px; font-size: 0.88rem; z-index: 1200; font-weight: 500; pointer-events: none; opacity: 0; transform: translateX(30px); transition: opacity 0.25s ease, transform 0.25s ease; }
+    .toast.show { opacity: 1; transform: translateX(0); }
+    .toast.hide { opacity: 0; transform: translateX(30px); }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; align-items: center; }
+    .welcome-card { background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; border: 1px solid #d9e2ef; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; animation: fadeSlideUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
+    .welcome-card .info { flex: 1; min-width: 200px; }
+    .welcome-card .info strong { font-size: 1rem; }
+    .welcome-card .info .muted { display: block; margin-top: 2px; }
+    .intensity-dial { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 16px 0; }
+    .dial-dot { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; border: 2px solid #94A3B8; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: #fff; user-select: none; }
+    .dial-dot:hover { transform: scale(1.1); }
+    .dial-dot.selected { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(74,144,217,0.25); border-color: #fff; animation: breathe 2s infinite ease-in-out; }
+    .dial-description { text-align: center; min-height: 40px; padding: 8px; font-size: 0.85rem; color: var(--text-muted); transition: all 0.3s ease; }
+    @keyframes goldFlash { 0% { border-color: #fbbf24; box-shadow: 0 0 0 4px rgba(251,191,36,0.4); } 100% { border-color: var(--primary-light); box-shadow: 0 0 0 0 rgba(251,191,36,0); } }
+    .gold-flash { animation: goldFlash 0.6s ease-out; }
+    .chart-container { position: relative; margin: 16px 0; }
+    .chart-container canvas { width: 100%; border-radius: 16px; display: block; }
+    .chart-tooltip { position: absolute; background: rgba(15,23,42,0.92); color: #fff; padding: 8px 14px; border-radius: 12px; font-size: 0.78rem; pointer-events: none; z-index: 10; white-space: nowrap; opacity: 0; transition: opacity 0.15s ease; }
+    @keyframes starPop { 0% { transform: scale(0.8); opacity: 0; } 60% { transform: scale(1.03); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+    .star-chart-animate { animation: starPop 0.4s ease-in-out; }
+    .inline-manage-bar { background: #fef2f2; border: 2px solid #fecaca; border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; animation: fadeSlideUp 0.3s ease; }
+    .inline-manage-bar .manage-list { max-height: 35vh; overflow-y: auto; margin: 8px 0; }
+    .inline-manage-bar label { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; border-bottom: 1px solid #fee2e2; font-size: 0.85rem; }
+    @media (max-width: 600px) {
+      body { padding: 14px 10px 50px; }
+      h1 { font-size: 1.5rem; }
+      .connector { display: none; }
+      .roadmap { justify-content: space-around; }
+      .milestone .icon { font-size: 1.5rem; }
+      .panel { padding: 1rem 1rem 1.3rem; border-radius: 20px; }
+      .step-title { font-size: 1.25rem; }
+      button { padding: 8px 16px; font-size: 0.82rem; }
+      .btn-primary { padding: 10px 18px; }
+      .phrase-editor { padding: 10px 12px; }
+      .token { padding: 6px 12px; }
+      .dial-dot { width: 48px; height: 48px; }
+      .inline-manage-bar .manage-list { max-height: 30vh; }
+    }
+  </style>
+</head>
+<body>
+<h1>🧠 清恒机电工程部·青少年心理建构工具</h1>
+<div id="welcomeCardContainer"></div>
+<p id="mainSubtitle" style="margin-bottom:1.2rem;">欢迎来到你的专属心灵保养车间。按照<strong>扫描 → 拆解 → 建构 → 锚定</strong>四个流程，为你的内心做一次点检与迭代。</p>
+<div id="faultDisplay" class="fault-box" style="display:none;" role="alert"></div>
+
+<section id="scanModule" class="panel" aria-labelledby="scanTitle">
+  <div class="step-title" id="scanTitle">🔍 第一步 · 描述"故障现象"</div>
+  <p>请自由描述你最近遇到的困扰：</p>
+  <textarea id="userInput" rows="3" placeholder="试着描述一下你最近的心情。不用想太多，想到什么就写什么。比如最近什么事让你觉得烦、累、或说不上来的不对劲....." aria-label="描述你的困扰"></textarea>
+  <div class="muted" style="margin-top:6px;"><label style="cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="singleCharSwitch"> 实验模式：单字情绪匹配（修改后需重新扫描）</label></div>
+  <div class="nav"><button class="btn-primary" id="scanBtn">📡 记录故障现象</button></div>
+  <div id="scanConfirm" style="display:none;">
+    <h3>✏️ 确认和修改</h3>
+    <p class="muted">根据你的描述，系统初步归纳如下，你可自由修改：</p>
+    <div id="scanOutput" class="output-box" aria-live="polite"></div>
+    <textarea id="editArea" rows="3" aria-label="编辑归纳结果"></textarea>
+    <h4 style="margin-top:12px;">📊 情绪强度等级</h4>
+    <p class="muted">请根据你的真实感受，选择一个强度等级：</p>
+    <div id="scanIntensityDial" class="intensity-dial"></div>
+    <div id="scanDialDescription" class="dial-description"></div>
+    <button class="btn-primary" id="confirmScanBtn" style="margin-top:8px;">确认并进入故障分型</button>
+  </div>
+  <div id="saveSuccess" class="success-box" style="display:none;" aria-live="polite">✅ 故障现象已记录，进入拆解环节...</div>
+  <div id="storageWarningScan" class="storage-warning" style="display:none;"></div>
+</section>
+
+<section id="disassembleModule" class="panel" style="display:none;" aria-labelledby="disTitle">
+  <div class="step-title" id="disTitle">🔧 第二步 · 故障分型</div>
+  <p>把"故障现象"拆成<strong>信号、目的和强度</strong>，看清情绪在提醒你什么。</p>
+  <div id="dRoadmap" class="roadmap" aria-label="拆解进度"></div>
+  <div class="muted">💡 点击已完成的步骤可返回修改。</div>
+  <div class="nav">
+    <button class="btn-secondary" id="backToScanBtn">← 返回扫描</button>
+    <button class="btn-secondary" id="resetDisBtn">🔄 重新拆解</button>
+  </div>
+  <div class="reference-box"><strong>📋 当前梳理：</strong><span id="referenceText"></span></div>
+  <div id="dContent" aria-live="polite"></div>
+  <div id="reportArea" style="display:none;">
+    <div class="step-title">📋 故障分型报告</div>
+    <div id="reportContent" class="report-box" aria-live="polite"></div>
+    <textarea id="reportEdit" rows="6" aria-label="编辑分型报告"></textarea>
+    <button class="btn-primary" id="confirmReportBtn">确认并进入建构</button>
+  </div>
+  <div id="reportSuccess" class="success-box" style="display:none;" aria-live="polite">✅ 故障分型报告已保存，即将进入制定保养方案。</div>
+  <div id="storageWarningReport" class="storage-warning" style="display:none;"></div>
+</section>
+
+<section id="constructModule" class="panel" style="display:none;" aria-labelledby="conTitle">
+  <div class="step-title" id="conTitle">🔨 第三步 · 制定保养方案</div>
+  <p>为自己设计一份可以在现实中启动的小方案。</p>
+  <div id="cRoadmap" class="roadmap" aria-label="建构进度"></div>
+  <div class="muted">💡 点击已完成的步骤可返回修改。</div>
+  <div class="nav">
+    <button class="btn-secondary" id="backToDisBtn">← 返回拆解</button>
+    <button class="btn-secondary" id="resetConBtn">🔄 重置建构</button>
+  </div>
+  <div class="reference-box"><strong>📦 当前方案：</strong><span id="constructReferenceText"></span></div>
+  <div id="cContent" aria-live="polite"></div>
+  <div id="creportArea" style="display:none;">
+    <div class="step-title">📋 我的现实改变方案</div>
+    <div id="creportContent" class="report-box" aria-live="polite"></div>
+    <textarea id="creportEdit" rows="6" aria-label="编辑改变方案"></textarea>
+    <div class="nav">
+      <button class="btn-primary" id="savePlanBtn">💾 保存方案</button>
+      <button class="btn-secondary" id="editPlanBtn">✏️ 重新修改</button>
+      <button class="btn-secondary" id="copyPlanBtn">📋 一键复制</button>
+    </div>
+  </div>
+  <div id="creportSuccess" class="success-box" style="display:none;" aria-live="polite">
+    ✅ 你的现实改变方案已保存。<br><span class="muted">你的工具箱里又多了一把扳手。</span><br><br>
+    <div class="nav">
+      <button class="btn-primary" id="goAnchorBtn">⚓ 进入锚定模块</button>
+      <button class="btn-secondary" id="viewPlanBtn">📄 查看完整方案</button>
+      <button class="btn-primary" id="newMaintenanceBtn">🔄 开始新的保养</button>
+    </div>
+  </div>
+  <div id="storageWarningConstruct" class="storage-warning" style="display:none;"></div>
+</section>
+
+<section id="anchorModule" class="panel" style="display:none;" aria-labelledby="anchorTitle">
+  <div class="step-title" id="anchorTitle">⚓ 第四步 · 锚定与迭代</div>
+  <p>保养方案不是终点。这里是成长评审套件：回顾、检测、加固。</p>
+  <div class="tabs" role="tablist">
+    <span class="tab active" data-tab="museum" role="tab" aria-selected="true">📦 协议博物馆</span>
+    <span class="tab" data-tab="gravity" role="tab" aria-selected="false">🌌 引力图</span>
+    <span class="tab" data-tab="review" role="tab" aria-selected="false">📅 每周评审</span>
+    <span class="tab" data-tab="stress" role="tab" aria-selected="false">🔧 压力测试</span>
+    <span class="tab" data-tab="report" role="tab" aria-selected="false">📊 数据报告</span>
+  </div>
+  <div id="anchorPanel" aria-live="polite"></div>
+</section>
+
+<script>
+(function(){
+  'use strict';
+
+  const STORE = {
+    records: 'mind4s_records',
+    reports: 'mind4s_reports',
+    plans: 'mind4s_plans',
+    disassembly: 'mind4s_disassembly_data',
+    reviews: 'mind4s_reviews',
+    stress: 'mind4s_stress_tests',
+    gravity: 'mind4s_gravity'
+  };
+
+  const intensityLevels = [
+    { level: 1, name: '呼吸般的存在', desc: '隐约可察，如自己的呼吸声，几乎与背景融为一体', color: '#93C5FD' },
+    { level: 2, name: '课间走廊的喧哗', desc: '能清晰听到，但不会干扰你专注手头的事', color: '#7DD3FC' },
+    { level: 3, name: '突然响起的上课铃', desc: '全身一激灵，注意力被瞬间抓取，但很快适应', color: '#67E8F9' },
+    { level: 4, name: '体育课后的心跳', desc: '感觉强烈，脉搏砰砰作响，需要刻意调整呼吸', color: '#6EE7B7' },
+    { level: 5, name: '考场上最后五分钟的冲刺', desc: '全神贯注，时间感扭曲，身体紧绷，手心出汗', color: '#FACC15' },
+    { level: 6, name: '重要演讲前的候场时刻', desc: '心跳如鼓，思绪翻腾，感觉下一秒就要被推上舞台', color: '#FDBA74' },
+    { level: 7, name: '目睹意外发生瞬间的空白', desc: '巨大震惊，大脑"嗡"一声空白，世界静止', color: '#FB923C' },
+    { level: 8, name: '无法抑制的剧烈生理反应', desc: '痛哭到颤抖、愤怒到砸墙，身体几乎接管控制', color: '#F87171' },
+    { level: 9, name: '完全淹没的峰值体验', desc: '感受、思绪、世界全部被一种强烈感受吞噬', color: '#F97316' }
+  ];
+
+  const emotionColors = {
+    '喜悦满足类': '#fbbf24',
+    '平静安宁类': '#60a5fa',
+    '愤怒不满类': '#f87171',
+    '悲伤难过类': '#a78bfa',
+    '恐惧焦虑类': '#fb923c',
+    '愧疚羞耻类': '#f472b6',
+    '嫉妒厌倦类': '#34d399',
+    '惊讶疑惑类': '#fcd34d',
+    '纠结惆怅类': '#94a3b8',
+    '压抑/不适类': '#475569',
+    '复杂的情绪波动': '#64748b',
+    '手动录入': '#2c6e9e'
+  };
+
+  const dictionary = {
+    emotions: {
+      '喜悦满足类': ['开心','高兴','快乐','满足','自豪','轻松','安心','踏实','爽','乐','喜','暖','欣慰','雀跃'],
+      '平静安宁类': ['平静','安静','宁静','淡定','从容','释然','安稳','平和'],
+      '愤怒不满类': ['生气','愤怒','不满','不爽','窝火','憋屈','烦躁','烦','怒','气','恨','怨','火大','恼火'],
+      '悲伤难过类': ['痛苦','难过','伤心','悲伤','失落','低落','委屈','压抑','心酸','emo','丧','苦','酸','想哭','难受'],
+      '恐惧焦虑类': ['害怕','恐惧','焦虑','紧张','慌张','心慌','不安','着急','慌','怕','急','担忧'],
+      '愧疚羞耻类': ['愧疚','羞愧','羞耻','自责','后悔','尴尬','丢脸','尬','过意不去'],
+      '嫉妒厌倦类': ['嫉妒','羡慕','厌烦','厌倦','无聊','疲惫','累','困','没劲','乏'],
+      '惊讶疑惑类': ['惊讶','疑惑','迷茫','茫然','懵','愣','晕','不解'],
+      '纠结惆怅类': ['纠结','矛盾','无奈','遗憾','糟心','闹心','空','堵','闷','乱','不知所措']
+    },
+    negators: ['不','没','无','非','别'],
+    events: ['实训','车间','机床','工件','考试','考证','师傅','同学','班主任','家里','就业','实习','未来','工资','被批评','挨骂','吵架','矛盾','冲突','尺寸超差','图纸看错','机床报警','编程出错','对刀失误','精度不够','面试','简历','专升本','技能大赛','奖学金'],
+    metaphors: [
+      { keys: ['下雨','雨','淋雨','潮湿'], category: '悲伤难过类', text: '你描述的感觉像心里下着雨，潮湿、阴冷。', q: '这场心里的雨是绵绵细雨还是倾盆大雨？' },
+      { keys: ['雾','看不清','路口','十字路口','迷雾'], category: '纠结惆怅类', text: '你描述的感觉像被雾困住，看不清路。', q: '如果没有人催你，你最想去的方向是哪一个？' },
+      { keys: ['短路','过载','跳闸','保险丝','烧了'], category: '恐惧焦虑类', text: '你描述的感觉像电路过载，所有灯都在闪。', q: '是哪个回路承载了太多？' },
+      { keys: ['生锈','卡住','螺丝','齿轮','轴承','卡顿'], category: '纠结惆怅类', text: '你描述的感觉像一个卡住的零件，需要检修。', q: '你觉得是哪道工序卡住了？' },
+      { keys: ['精度','漂移','偏差','对刀','零点','公差'], category: '愧疚羞耻类', text: '你的自我要求像高精度卡尺，可能需要重新校准基准。', q: '那个你一直在测量的标准，是谁给你的？' }
+    ],
+    feelings: {
+      '喜悦满足类': '这份感觉像灯亮了，心里有一点热和力量。',
+      '平静安宁类': '这份感觉像机器稳定运转，节奏稳稳的。',
+      '愤怒不满类': '这股火像胸口堵着一团热气，想找一个出口。',
+      '悲伤难过类': '这份难过像心里压了块铁，提不起劲。',
+      '恐惧焦虑类': '这份紧张像警报器一直响，身体在提醒你小心。',
+      '愧疚羞耻类': '这份自责像脸上发热，心里反复回放那一幕。',
+      '嫉妒厌倦类': '这份疲惫像钻头磨钝了，还在转，但很吃力。',
+      '惊讶疑惑类': '这份懵像系统突然卡顿。',
+      '纠结惆怅类': '这份纠结像雾里走路，看不清下一步。',
+      '压抑/不适类': '你的感受里有些欲言又止的东西，像被按下去又浮上来的浮漂。'
+    }
+  };
+
+  const safetyKeywords = ['打人','打架','打砸','揍','报复','砸烂','伤害自己','自残','冲过去','骂回去'];
+  const stressScenarios = [
+    { id:'S01', title:'师傅当众批评', desc:'实训课上，师傅当着全班的面说你做的工件不合格。' },
+    { id:'S02', title:'考证前夜', desc:'明天就是职业技能鉴定考试，你躺在床上怎么也睡不着。' },
+    { id:'S03', title:'和同学发生冲突', desc:'同组搭档把失误推到你身上，其他人似乎在相信他。' },
+    { id:'S04', title:'收到坏消息', desc:'家里来电话，说家里出了状况，让你周末回去一趟。' },
+    { id:'S05', title:'计划完全失败', desc:'你花了很多时间准备的方案被直接否决，需要全部重来。' },
+    { id:'S06', title:'被拿来和别人比', desc:'师傅说"你看看人家，再看看你自己。"' },
+    { id:'S07', title:'对未来感到迷茫', desc:'同学都在讨论去哪个厂实习，你完全不知道自己想去哪里。' },
+    { id:'S08', title:'当众出丑', desc:'你在全班面前做演示时操作失误，机器发出警报。' }
+  ];
+
+  const state = {
+    scanMatch: null,
+    dStage: 1, dSub: 1,
+    cStage: 1, cSub: 1,
+    d: { name:'', body:'', time:'', place:'', reminder:'', memory:'', better:'', fact:'', feeling:'', tilt:'', friend:'' },
+    c: { person:'', actionDone:'', felt:'', thought:'', perspective:'', newPerspective:'', trigger:'', action:'', firstStep:'' },
+    selectedScenario: null,
+    gravityDragNode: null,
+    gravityDragOffset: { x: 0, y: 0 },
+    museumManageMode: false
+  };
+
+  const $ = id => document.getElementById(id);
+  const esc = str => String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m] || m);
+  const readArr = key => { try { const v = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(v) ? v : []; } catch(e) { return []; } };
+  const writeArr = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { showFault('存储空间不足，请清理一些旧记录后再试。'); } };
+  const readObj = key => { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch(e) { return null; } };
+  const writeObj = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { showFault('存储空间不足。'); } };
+  const show = (id, yes = true) => { const el = $(id); if (el) el.style.display = yes ? 'block' : 'none'; };
+  const hideAll = ids => ids.forEach(id => show(id, false));
+
+  function toast(msg, detail = '') {
+    const existing = document.querySelector('.toast'); if (existing) existing.remove();
+    const el = document.createElement('div'); el.className = 'toast';
+    el.textContent = msg + (detail ? ': ' + detail : ''); el.setAttribute('role', 'status');
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => { el.classList.remove('show'); el.classList.add('hide'); setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }, 2600);
+  }
+
+  function showFault(msg) {
+    const fd = $('faultDisplay'); if (!fd) return;
+    fd.innerHTML = '⚠️ ' + esc(msg); show('faultDisplay', true);
+    fd.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    clearTimeout(fd._timeout); fd._timeout = setTimeout(() => show('faultDisplay', false), 5000);
+  }
+
+  function showStorageWarning(elId, key) {
+    try { const data = localStorage.getItem(key); if (data && data.length > 400000) { const el = $(elId); if (el) { el.style.display = 'block'; el.textContent = '⚠️ 该存储项数据较多，建议定期清理旧记录以保持流畅。'; } } } catch(e) {}
+  }
+
+  function renderIntensityDial(containerId, descId, currentLevel, onChange) {
+    const container = $(containerId); const descEl = $(descId);
+    if (!container) return;
+    container.innerHTML = '';
+    intensityLevels.forEach(il => {
+      const dot = document.createElement('div');
+      dot.className = 'dial-dot' + (il.level === currentLevel ? ' selected' : '');
+      dot.style.backgroundColor = il.color; dot.textContent = il.level;
+      dot.setAttribute('role', 'button'); dot.setAttribute('aria-label', '等级' + il.level + ': ' + il.name);
+      dot.addEventListener('click', () => {
+        container.querySelectorAll('.dial-dot').forEach(d => d.classList.remove('selected'));
+        dot.classList.add('selected');
+        if (descEl) descEl.textContent = 'Lv.' + il.level + ' ' + il.name + ' — ' + il.desc;
+        if (onChange) onChange(il.level);
+      });
+      container.appendChild(dot);
+    });
+    if (descEl && currentLevel) {
+      const found = intensityLevels.find(il => il.level === currentLevel);
+      if (found) descEl.textContent = 'Lv.' + found.level + ' ' + found.name + ' — ' + found.desc;
+    }
+  }
+
+  class Scanner {
+    constructor() { this.allowSingleChar = false; }
+    scan(input) {
+      const text = input.trim();
+      if (!text) throw new Error('请至少输入一句话来描述你的感受。');
+      if (text.length < 2) throw new Error('请多写一点，哪怕几个词也好。');
+      const metaphor = dictionary.metaphors.find(m => m.keys.some(k => text.includes(k))) || null;
+      const matches = [];
+      for (const [cat, words] of Object.entries(dictionary.emotions)) {
+        for (const w of words.sort((a, b) => b.length - a.length)) {
+          if (!this.allowSingleChar && w.length === 1) continue;
+          if (text.includes(w) && !matches.some(m => m.word === w)) matches.push({ word: w, category: cat });
+        }
+      }
+      if (matches.length === 0 && metaphor) matches.push({ word: metaphor.keys[0], category: metaphor.category });
+
+      // 逐词双重否定检测
+      const toRemove = [];
+      matches.forEach(m => {
+        const idx = text.indexOf(m.word);
+        if (idx > 0) {
+          const prefix = text.substring(Math.max(0, idx - 6), idx);
+          let negatorCount = 0;
+          dictionary.negators.forEach(n => {
+            let pos = -1;
+            while ((pos = prefix.indexOf(n, pos + 1)) !== -1) negatorCount++;
+          });
+          if (negatorCount >= 2) {
+            toRemove.push(m);
+          } else if (negatorCount === 1) {
+            const negator = dictionary.negators.find(n => prefix.includes(n));
+            m.negated = true;
+            m.negator = negator;
+            m.originalCategory = m.category;
+            m.category = '压抑/不适类';
+          }
+        }
+      });
+      toRemove.forEach(m => {
+        const idx = matches.indexOf(m);
+        if (idx !== -1) matches.splice(idx, 1);
+      });
+
+      const emotions = matches.map(m => {
+        if (m.negated && m.negator) return m.negator + m.word;
+        return m.word;
+      }).slice(0, 4);
+      const categories = [...new Set(matches.map(m => m.category))];
+      const primaryCategory = categories[0] || '复杂的情绪波动';
+      let output = emotions.length ? '识别到情绪信号：' + emotions.join('、') + '。' : '感受到一种复杂的情绪。';
+      const event = dictionary.events.sort((a, b) => b.length - a.length).find(e => text.includes(e));
+      if (event) output = '触发事件可能和"' + event + '"有关。' + output;
+      if (metaphor) { output += '\n\n💬 ' + metaphor.text; if (metaphor.q) output += '\n\n❓ ' + metaphor.q; }
+      else if (dictionary.feelings[primaryCategory]) output += '\n\n💬 ' + dictionary.feelings[primaryCategory];
+      return { output, match: { raw: text, event: event || null, emotions, emotion: emotions[0] || '复杂的情绪', categories, emotionCategory: primaryCategory, metaphor, intensity: null } };
+    }
+  }
+  const scanner = new Scanner();
+
+  function setRoadmap(containerId, labels, currentStage, onJump) {
+    const container = $(containerId); if (!container) return;
+    container.innerHTML = '';
+    labels.forEach(([icon, label], idx) => {
+      const stage = idx + 1;
+      const cls = stage < currentStage ? 'done' : (stage === currentStage ? 'current' : '');
+      const milestone = document.createElement('div'); milestone.className = 'milestone ' + cls;
+      milestone.dataset.stage = stage;
+      milestone.innerHTML = '<span class="icon">' + icon + '</span><span class="label">' + label + '</span>';
+      milestone.setAttribute('role', 'button'); milestone.setAttribute('tabindex', cls ? '0' : '-1');
+      container.appendChild(milestone);
+      if (idx < labels.length - 1) { const conn = document.createElement('div'); conn.className = 'connector ' + (stage < currentStage ? 'done' : ''); container.appendChild(conn); }
+    });
+    container.onclick = (e) => {
+      const milestone = e.target.closest('.milestone'); if (!milestone) return;
+      const s = Number(milestone.dataset.stage);
+      if (s <= currentStage && (milestone.classList.contains('done') || milestone.classList.contains('current'))) onJump(s);
+    };
+  }
+
+  function token(fixedBefore, key, placeholder, fixedAfter) {
+    fixedAfter = fixedAfter || '';
+    const val = esc(getValue(key));
+    return '<div class="phrase-editor"><span class="token">' +
+      '<span class="fixed">' + esc(fixedBefore) + '</span>' +
+      '<span class="editable-mid" contenteditable="true" data-key="' + esc(key) + '" data-placeholder="' + esc(placeholder) + '" role="textbox" aria-label="' + esc(placeholder) + '">' + val + '</span>' +
+      '<span class="fixed">' + esc(fixedAfter) + '</span>' +
+      '<button class="remove-btn" type="button" aria-label="清除此栏内容" title="清除">✕</button>' +
+      '</span></div>';
+  }
+
+  function getValue(key) {
+    if (key.startsWith('d.')) return state.d[key.slice(2)] || '';
+    if (key.startsWith('c.')) return state.c[key.slice(2)] || '';
+    return '';
+  }
+
+  function bindEditors(container) {
+    if (!container) return;
+    container.querySelectorAll('.editable-mid').forEach(el => {
+      el.removeEventListener('input', onInput); el.addEventListener('input', onInput);
+      function onInput() { const k = el.dataset.key; const val = el.textContent.trim(); if (k.startsWith('d.')) state.d[k.slice(2)] = val; if (k.startsWith('c.')) state.c[k.slice(2)] = val; updateReferences(); }
+    });
+    container.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => { const tokenEl = btn.closest('.token'); if (tokenEl) { tokenEl.querySelectorAll('.editable-mid').forEach(mid => { mid.textContent = ''; mid.dispatchEvent(new Event('input', { bubbles: true })); }); } });
+    });
+  }
+
+  function hintList(items, key) {
+    return '<div class="hints"><span class="muted">💡 快捷填入：</span>' + items.map(v => '<span class="hint" data-fill="' + key + '" data-value="' + esc(v) + '" role="button" tabindex="0">' + esc(v) + '</span>').join('') + '</div>';
+  }
+
+  function bindHints(container) {
+    if (!container) return;
+    container.querySelectorAll('[data-fill]').forEach(el => {
+      el.addEventListener('click', () => { const target = document.querySelector('.editable-mid[data-key="' + el.dataset.fill + '"]'); if (target) { target.textContent = el.dataset.value; target.dispatchEvent(new Event('input', { bubbles: true })); target.focus(); } });
+    });
+  }
+
+  function updateReferences() {
+    const refText = $('referenceText');
+    if (refText) { const emo = state.scanMatch?.emotion || '这份感受'; refText.innerHTML = '情绪：' + esc(emo) + '<br>信号：' + esc(state.d.name||'?') + ' (' + esc(state.d.body||'位置') + ') / ' + esc(state.d.time||'时间') + ' ' + esc(state.d.place||'场景') + '<br>目的：提醒' + esc(state.d.reminder||'…') + ' / 想起' + esc(state.d.memory||'…') + '<br>强度：实际上当时发生的事"' + esc(state.d.fact||'…') + '" → 感受"' + esc(state.d.feeling||'…') + '"'; }
+    const conRef = $('constructReferenceText');
+    if (conRef) { conRef.innerHTML = '困境：' + esc(state.c.person||'某人') + ' / ' + esc(state.c.actionDone||'事件') + '<br>念头：' + esc(state.c.thought||'…') + '<br>新理解：' + esc(state.c.newPerspective||state.c.perspective||'…') + '<br>行动：当' + esc(state.c.trigger||'…') + '，我就' + esc(state.c.action||'…') + '，第一步' + esc(state.c.firstStep||'…'); }
+  }
+
+  function generatePerspectiveBubbles() {
+    const pool = [state.scanMatch?.raw || '', state.scanMatch?.event || '', state.d.place || '', state.d.memory || '', state.c.thought || '', state.d.name || ''].join(' ');
+    const personCandidates = ['师傅', '老师', '同学', '朋友', '家人', '班主任', '搭档'];
+    const foundPersons = personCandidates.filter(p => pool.includes(p));
+    const bubbles = [];
+    if (foundPersons.length > 0) {
+      foundPersons.slice(0, 2).forEach(p => bubbles.push({ icon: '👤', label: p + '视角', value: '如果我是' + p + '，我可能会觉得这件事有另一面，不全是谁的错。' }));
+    }
+    if (bubbles.length < 3 && pool.includes('同学')) bubbles.push({ icon: '👀', label: '旁观同学视角', value: '旁观的同学可能根本没注意到细节，或者觉得这很正常。' });
+    if (bubbles.length < 3) bubbles.push({ icon: '⏰', label: '十年后的我', value: '十年后的我回头看这件事，可能会觉得它没那么严重，甚至会觉得这是一次重要的成长。' });
+    if (bubbles.length < 4) bubbles.push({ icon: '🤝', label: '最好的朋友', value: '如果我最好的朋友遇到同样的事，我会告诉他：你已经做得很好了，不需要对自己那么苛刻。' });
+    return bubbles.slice(0, 4);
+  }
+
+  function renderPerspectiveBubbles() {
+    const bubbles = generatePerspectiveBubbles();
+    return '<div class="bubbles">' + bubbles.map(b => '<span class="bubble perspective-bubble" data-fill="c.perspective" data-value="' + esc(b.value) + '" role="button" tabindex="0">' + b.icon + ' ' + b.label + '</span>').join('') + '</div>';
+  }
+
+  function bindPerspectiveBubbles(container) {
+    if (!container) return;
+    container.querySelectorAll('.perspective-bubble').forEach(el => {
+      el.addEventListener('click', () => {
+        const target = document.querySelector('.editable-mid[data-key="c.perspective"]');
+        if (target) {
+          target.textContent = el.dataset.value;
+          target.dispatchEvent(new Event('input', { bubbles: true }));
+          target.classList.add('gold-flash');
+          setTimeout(() => target.classList.remove('gold-flash'), 600);
+          target.focus();
+        }
+      });
+    });
+  }
+
+  function renderDisassemble() {
+    setRoadmap('dRoadmap', [['📡','信号识别'],['🔍','目的探索'],['⚖️','强度匹配']], state.dStage, (s) => { state.dStage = s; state.dSub = 1; renderDisassemble(); });
+    show('reportArea', false); show('dContent', true);
+    const emo = state.scanMatch?.emotion || '那份感受';
+    let html = '';
+    if (state.dStage === 1 && state.dSub === 1) {
+      html = '<h3>信号识别 (1/2)</h3><p>如果给"' + esc(emo) + '"起个绰号，你会叫它什么？它住在身体的哪个位置？</p>' +
+        token('我叫它', 'd.name', '嗡嗡叫的马达', '。') +
+        token('它住在身体的', 'd.body', '胸口', '附近。') +
+        hintList(['胸口','喉咙','太阳穴','胃像打结','肩膀发紧','后脑勺'], 'd.body') +
+        '<div class="feedback muted">💡 起个名字能让情绪不那么吓人。</div><div class="nav"><button class="btn-secondary" data-next>下一步 →</button></div>';
+    } else if (state.dStage === 1 && state.dSub === 2) {
+      html = '<h3>信号识别 (2/2)</h3><p>这种感觉第一次出现大概是什么时候？当时你正在做什么？</p>' +
+        token('最早是在', 'd.time', '上周二实训课', '。') +
+        token('当时我正在', 'd.place', '实训车间', '。') +
+        hintList(['上周考核后','那次被点名时','刚入学那阵子','最近一周'], 'd.time') +
+        '<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-done1>确认并进入目的探索</button></div>';
+    } else if (state.dStage === 2 && state.dSub === 1) {
+      html = '<h3>目的探索 (1/2)</h3><p>它在努力提醒你注意什么？是不是让你想起了过去某次类似的经历？</p>' +
+        '<div class="bubbles">' + ['像那次被当众批评','像考试前的紧张','像怎么努力都不够的日子','像刚进车间时的慌张'].map(v => '<span class="bubble" data-fill="d.memory" data-value="' + esc(v) + '" role="button" tabindex="0">' + esc(v) + '</span>').join('') + '</div>' +
+        token('它在提醒我', 'd.reminder', '该休息了', '。') +
+        token('它让我想起过去那次', 'd.memory', '类似的经历', '。') +
+        '<div class="nav"><button class="btn-secondary" data-prevstage>← 上一步</button><button class="btn-secondary" data-next>下一步 →</button></div>';
+    } else if (state.dStage === 2 && state.dSub === 2) {
+      html = '<h3>目的探索 (2/2)</h3><p>假如某天醒来这种情绪突然消失，哪些地方会变好？</p>' +
+        token('如果它消失了，', 'd.better', '我会更愿意和师傅说话', '。') +
+        hintList(['晚上睡得更好','敢主动问问题','和同学相处轻松','干活更有劲'], 'd.better') +
+        '<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-done2>确认并进入强度匹配</button></div>';
+    } else if (state.dStage === 3 && state.dSub === 1) {
+      html = '<h3>强度匹配 (1/2)</h3><p>经过刚刚的梳理，你现在感觉情绪强度如何？有没有什么新的变化？</p>' +
+        '<div id="disIntensityDial" class="intensity-dial"></div><div id="disDialDescription" class="dial-description"></div>' +
+        '<p style="margin-top:12px;">把"实际发生的事"放左边，"你的感受强度"放右边，天平向哪边倾斜？</p>' +
+        token('实际上当时发生的事是', 'd.fact', '师傅说了我几句', '。') +
+        token('我的感受是', 'd.feeling', '特别委屈', '。') +
+        token('天平向', 'd.tilt', '左边/右边', '这边斜。') +
+        '<div class="nav"><button class="btn-secondary" data-prevstage>← 上一步</button><button class="btn-secondary" data-next>下一步 →</button></div>';
+    } else if (state.dStage === 3 && state.dSub === 2) {
+      html = '<h3>强度匹配 (2/2)</h3><p>假如你最好的朋友遇到一模一样的事，你会怎么对他说？</p>' +
+        token('我会对他说：', 'd.friend', '你已经很努力了，别太责备自己', '。') +
+        hintList(['你已经做得很好了','这不是你一个人的问题','先休息一下','我理解你的感受'], 'd.friend') +
+        '<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-report>📋 生成故障分型报告</button></div>';
+    }
+    $('dContent').innerHTML = html;
+    bindEditors($('dContent')); bindHints($('dContent'));
+    if (state.dStage === 3 && state.dSub === 1) {
+      const currentIntensity = state.scanMatch?.intensity || 5;
+      renderIntensityDial('disIntensityDial', 'disDialDescription', currentIntensity, (level) => {
+        if (state.scanMatch) state.scanMatch.intensity = level;
+        state.d.level = level;
+        toast('强度已更新', '等级 ' + level);
+      });
+    }
+    $('dContent').querySelector('[data-next]')?.addEventListener('click', () => { state.dSub = 2; renderDisassemble(); });
+    $('dContent').querySelector('[data-prev]')?.addEventListener('click', () => { state.dSub = 1; renderDisassemble(); });
+    $('dContent').querySelector('[data-prevstage]')?.addEventListener('click', () => { state.dStage = Math.max(1, state.dStage - 1); state.dSub = 2; renderDisassemble(); });
+    $('dContent').querySelector('[data-done1]')?.addEventListener('click', () => { state.dStage = 2; state.dSub = 1; toast('信号捕手', '情绪信号已锁定'); renderDisassemble(); });
+    $('dContent').querySelector('[data-done2]')?.addEventListener('click', () => { state.dStage = 3; state.dSub = 1; toast('探索先锋', '找到了情绪的任务卡'); renderDisassemble(); });
+    $('dContent').querySelector('[data-report]')?.addEventListener('click', generateReport);
+  }
+
+  function generateReport() {
+    const divider = '━━━━━━━━━━━━━━━━━━';
+    const report = divider + '\n  📋 故障分型报告\n' + divider + '\n\n  ▎信号识别\n  我叫它' + (state.d.name || '这份感受') + '，在' + (state.d.body || '某处') + '附近。\n  最早在' + (state.d.time || '某个时候') + '，正在' + (state.d.place || '某处') + '。\n\n  ▎目的探索\n  它在提醒我' + (state.d.reminder || '照顾自己') + '，让我想起' + (state.d.memory || '某次经历') + '。\n  如果它消失，' + (state.d.better || '生活会轻一点') + '。\n\n  ▎强度匹配\n  实际上当时发生的事是"' + (state.d.fact || '某件事') + '"，感受是"' + (state.d.feeling || '很强烈') + '"，天平向' + (state.d.tilt || '左边/右边') + '倾斜。\n  我会对朋友说：' + (state.d.friend || '先别急') + '。\n\n' + divider;
+    $('reportContent').textContent = report; $('reportEdit').value = report;
+    show('dContent', false); show('reportArea', true);
+    $('reportArea').scrollIntoView({ behavior: 'smooth' });
+    toast('校准专家', '故障分型报告已生成');
+    generateGravityDraft();
+  }
+
+  function generateGravityDraft() {
+    const coreLabel = state.d.name || state.scanMatch?.emotion || '核心感受';
+    const coreColor = emotionColors[state.scanMatch?.emotionCategory] || '#fbbf24';
+    const nodes = [{ id: 'core', label: coreLabel, type: 'core', x: 200, y: 200, radius: 30, color: coreColor }];
+    const edges = [];
+    const planets = [
+      { key: 'memory', label: (state.d.memory || '过往记忆').slice(0, 12), color: '#a78bfa', angle: 0 },
+      { key: 'reminder', label: (state.d.reminder || '提醒信号').slice(0, 12), color: '#60a5fa', angle: Math.PI / 3 },
+      { key: 'better', label: (state.d.better || '改善愿景').slice(0, 12), color: '#34d399', angle: 2 * Math.PI / 3 },
+      { key: 'fact', label: (state.d.fact || '触发事件').slice(0, 12), color: '#f87171', angle: Math.PI },
+      { key: 'tilt', label: '天平:' + (state.d.tilt || '未知'), color: '#fb923c', angle: 4 * Math.PI / 3 }
+    ];
+    planets.forEach((p, i) => {
+      const nx = 200 + 140 * Math.cos(p.angle); const ny = 200 + 140 * Math.sin(p.angle);
+      nodes.push({ id: 'n' + i, label: p.label, type: 'planet', x: nx, y: ny, radius: 18, color: p.color });
+      edges.push({ source: 'core', target: 'n' + i, type: i < 2 ? '提醒' : (i < 4 ? '引发' : '平衡') });
+    });
+    writeObj(STORE.gravity, { nodes, edges, updatedAt: new Date().toISOString() });
+  }
+
+  function renderConstruct() {
+    setRoadmap('cRoadmap', [['🎥','场景重现'],['🔍','视角转换'],['⚙️','行动设计']], state.cStage, (s) => { state.cStage = s; state.cSub = 1; renderConstruct(); });
+    show('creportArea', false); show('cContent', true);
+    let html = '';
+    if (state.cStage === 1 && state.cSub === 1) {
+      html = '<h3>场景重现 (1/2)</h3><p>重放场景：谁在场？对方说了/做了什么？你感到什么？</p>' +
+        token('当时，', 'c.person', '师傅', '在场。') +
+        token('对方说了/做了', 'c.actionDone', '你怎么又错了', '。') +
+        token('我感到', 'c.felt', '特别委屈', '。') +
+        '<div class="nav"><button class="btn-secondary" data-next>下一步 →</button></div>';
+    } else if (state.cStage === 1 && state.cSub === 2) {
+      html = '<h3>场景重现 (2/2)</h3><p>那个瞬间你脑子里立刻冒出的第一个念头是什么？</p>' +
+        token('我心里立刻想：', 'c.thought', '完了，我又搞砸了', '。') +
+        hintList(['完了，我又搞砸了','他就是针对我','我果然不行','为什么总是我'], 'c.thought') +
+        '<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-done1>确认并进入视角转换</button></div>';
+    } else if (state.cStage === 2 && state.cSub === 1) {
+      html = '<h3>视角转换 (1/2)</h3><p>选一个视角重新描述这件事：</p>' +
+        renderPerspectiveBubbles() +
+        token('换个角度看，', 'c.perspective', '对方也许不是故意的', '。') +
+        '<div class="nav"><button class="btn-secondary" data-prevstage>← 上一步</button><button class="btn-secondary" data-next>下一步 →</button></div>';
+    } else if (state.cStage === 2 && state.cSub === 2) {
+      html = '<h3>视角转换 (2/2)</h3><p>听完旁观者的说法，你对这件事的新理解是什么？一句话就够。</p>' +
+        token('我现在觉得，这件事可能其实是', 'c.newPerspective', '双方都在情境里，不全是我错', '。') +
+        '<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-done2>确认并进入行动设计</button></div>';
+    } else if (state.cStage === 3 && state.cSub === 1) {
+      html = '<h3>行动设计 (1/2)</h3><p>下次类似情况出现时，你希望在哪个具体信号出现时启动新反应？</p>' +
+        token('当', 'c.trigger', '师傅再次当众说我的时候', '的时候，') +
+        '<div class="nav"><button class="btn-secondary" data-prevstage>← 上一步</button><button class="btn-secondary" data-next>下一步 →</button></div>';
+    } else if (state.cStage === 3 && state.cSub === 2) {
+      html = '<h3>行动设计 (2/2)</h3>' +
+        '<div class="muted" style="margin-bottom:4px;">新行为：你打算怎么做？</div>' +
+        token('我会用这个新行为来替代旧反应：', 'c.action', '当天找机会用文字告诉师傅我的感受', '。') +
+        '<div class="muted" style="margin-top:12px; margin-bottom:4px;">第一步：哪怕只做这个也行</div>' +
+        token('在那一刻，我只要先做到这一点就够了：', 'c.firstStep', '拿出手机打开对话框', '。') +
+        '<div class="feedback muted">💡 示例：新行为是"告诉朋友我在打游戏，一会聊"，第一步是"把对话框缩小"。</div>' +
+        '<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-plan>📋 生成我的方案</button></div>';
+    }
+    $('cContent').innerHTML = html;
+    bindEditors($('cContent')); bindHints($('cContent')); bindPerspectiveBubbles($('cContent'));
+    $('cContent').querySelector('[data-next]')?.addEventListener('click', () => { state.cSub = 2; renderConstruct(); });
+    $('cContent').querySelector('[data-prev]')?.addEventListener('click', () => { state.cSub = 1; renderConstruct(); });
+    $('cContent').querySelector('[data-prevstage]')?.addEventListener('click', () => { state.cStage = Math.max(1, state.cStage - 1); state.cSub = 2; renderConstruct(); });
+    $('cContent').querySelector('[data-done1]')?.addEventListener('click', () => { state.cStage = 2; state.cSub = 1; renderConstruct(); });
+    $('cContent').querySelector('[data-done2]')?.addEventListener('click', () => { state.cStage = 3; state.cSub = 1; toast('蓝图设计师', '你找到了新的视角'); renderConstruct(); });
+    $('cContent').querySelector('[data-plan]')?.addEventListener('click', generatePlan);
+  }
+
+  function generatePlan() {
+    const dangerous = safetyKeywords.some(k => (state.c.action || '').includes(k) || (state.c.firstStep || '').includes(k));
+    if (dangerous && !confirm('⚠️ 你写的行动里包含可能激化冲突或伤害性的词语。\n\n确定要继续保存这个方案吗？\n\n如果需要，可以点击"取消"返回修改。')) return;
+    const divider = '━━━━━━━━━━━━━━━━━━';
+    const plan = divider + '\n  📋 我的现实改变方案\n' + divider + '\n\n  ▎困境场景\n  当时，' + (state.c.person || '某人') + '说了/做了' + (state.c.actionDone || '某件事') + '，我感到' + (state.c.felt || '感受') + '。\n  那一刻我心里想：' + (state.c.thought || '我可能又搞砸了') + '\n\n  ▎我的新理解\n  ' + (state.c.newPerspective || state.c.perspective || '这件事可能不全是我一个人的问题。') + '\n\n  ▎我的新行动\n  当' + (state.c.trigger || '类似情况再次出现') + '的时候，\n  我就' + (state.c.action || '先停下来，给自己一点反应时间') + '。\n  在那时那刻我马上会做的第一个动作是' + (state.c.firstStep || '先深呼吸一下') + '。\n\n' + divider;
+    $('creportContent').textContent = plan; $('creportEdit').value = plan;
+    show('cContent', false); show('creportArea', true);
+    $('creportArea').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function renderAnchor(tab) {
+    state.museumManageMode = false;
+    document.querySelectorAll('.tab').forEach(t => { t.classList.toggle('active', t.dataset.tab === tab); t.setAttribute('aria-selected', t.dataset.tab === tab ? 'true' : 'false'); });
+    if (tab === 'museum') renderMuseum();
+    else if (tab === 'gravity') renderGravity();
+    else if (tab === 'review') renderReview();
+    else if (tab === 'stress') renderStress();
+    else if (tab === 'report') renderDataReport();
+  }
+
+  function renderMuseum() {
+    const plans = readArr(STORE.plans);
+    if (!plans.length) { $('anchorPanel').innerHTML = '<h3>📦 协议博物馆</h3><p class="muted">暂无方案，请先在第三步完成一份保养方案。</p>'; return; }
+    const statusMap = { active: '✅ 运行中', retired: '📦 已退役', iterated: '🔄 已迭代' };
+    let html = '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;"><h3 style="margin:0;">📦 我的协议博物馆</h3><button class="btn-danger btn-small" id="toggleMuseumManageBtn">🗑️ 管理方案</button></div>';
+    html += '<p class="muted">你亲手建造的每一个版本，演化史。</p>';
+    if (state.museumManageMode) {
+      html += '<div class="inline-manage-bar" id="museumManageBar"><p class="muted" style="margin:0 0 8px;">选择要删除的方案（不可恢复）：</p><div class="manage-list">';
+      plans.forEach((p, i) => {
+        const sd = p.structuredData || {};
+        html += '<label><input type="checkbox" data-planidx="' + i + '"><span class="tag" style="font-size:0.7rem;">方案 ' + (i + 1) + '</span> ' + esc((sd.person || '?') + ' / ' + (sd.action || p.plan || '').slice(0, 30)) + ' — <span class="muted">' + new Date(p.timestamp).toLocaleDateString('zh-CN') + '</span></label>';
+      });
+      html += '</div><div class="nav" style="margin-top:8px;gap:8px;"><button class="btn-danger btn-small" id="museumDeleteSelectedBtn">🗑️ 删除选中</button><button class="btn-secondary btn-small" id="cancelMuseumManageBtn">取消</button></div></div>';
+    }
+    plans.slice().reverse().forEach((p, idx) => {
+      const realIdx = plans.length - 1 - idx; const sd = p.structuredData || {};
+      html += '<div class="card" data-midx="' + realIdx + '"><div><strong>' + esc(new Date(p.timestamp).toLocaleDateString('zh-CN')) + '</strong> <span class="muted">' + statusMap[p.museumStatus || 'active'] + '</span></div><div>' + esc((sd.person || '困境') + ' / ' + (sd.action || p.plan || '').slice(0, 35)) + '</div><div class="card-extra"><pre style="white-space:pre-wrap;font-size:0.82rem;">' + esc(p.plan || '') + '</pre>';
+      if (p.museumNote) html += '<div class="muted" style="margin-top:4px;padding:6px 10px;background:#fffbeb;border-radius:10px;">' + esc(p.museumNote).replace(/\n/g, '<br>') + '</div>';
+      html += '<div class="nav" style="margin-top:8px; gap:6px;">' + Object.entries(statusMap).map(([k, v]) => '<span class="tag ' + ((p.museumStatus || 'active') === k ? 'active' : '') + '" data-status="' + k + '" data-planidx="' + realIdx + '" role="button" tabindex="0">' + v + '</span>').join('') + '</div><textarea data-noteidx="' + realIdx + '" placeholder="退役/迭代说明（可选）" rows="2" style="margin-top:8px;width:100%;border-radius:12px;padding:8px;">' + esc(p.museumNote || '') + '</textarea></div></div>';
+    });
+    $('anchorPanel').innerHTML = html;
+    $('toggleMuseumManageBtn')?.addEventListener('click', (e) => { e.stopPropagation(); state.museumManageMode = !state.museumManageMode; renderMuseum(); });
+    $('cancelMuseumManageBtn')?.addEventListener('click', () => { state.museumManageMode = false; renderMuseum(); });
+    $('museumDeleteSelectedBtn')?.addEventListener('click', () => {
+      const checked = document.querySelectorAll('#museumManageBar input:checked');
+      if (checked.length === 0) { showFault('请至少选中一条方案。'); return; }
+      if (!confirm('确定要删除选中的 ' + checked.length + ' 条方案吗？此操作不可恢复。')) return;
+      const idxs = Array.from(checked).map(cb => Number(cb.dataset.planidx)).sort((a, b) => b - a);
+      const arr = readArr(STORE.plans);
+      idxs.forEach(i => arr.splice(i, 1));
+      writeArr(STORE.plans, arr);
+      state.museumManageMode = false;
+      renderMuseum();
+      toast('已删除', idxs.length + ' 条方案');
+    });
+    $('anchorPanel').querySelectorAll('.card').forEach(c => {
+      c.addEventListener('click', e => {
+        if (e.target.dataset.status || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON' || e.target.closest('.inline-manage-bar')) return;
+        c.classList.toggle('expanded');
+      });
+    });
+    $('anchorPanel').querySelectorAll('[data-status]').forEach(el => {
+      el.addEventListener('click', e => { e.stopPropagation(); const arr = readArr(STORE.plans); const idx = Number(el.dataset.planidx); if (arr[idx]) { arr[idx].museumStatus = el.dataset.status; writeArr(STORE.plans, arr); renderMuseum(); toast('状态已更新', statusMap[el.dataset.status]); } });
+    });
+    $('anchorPanel').querySelectorAll('[data-noteidx]').forEach(el => {
+      el.addEventListener('change', () => { const arr = readArr(STORE.plans); const idx = Number(el.dataset.noteidx); if (arr[idx]) { arr[idx].museumNote = el.value; writeArr(STORE.plans, arr); } });
+    });
+  }
+
+  function renderGravity() {
+    const data = readObj(STORE.gravity) || { nodes: [], edges: [], updatedAt: null };
+    let html = '<h3>🌌 引力图</h3><p class="muted">以核心情绪为恒星，相关情境/记忆为行星的关系图谱。</p>';
+    if (!data.nodes.length) {
+      html += '<p class="muted">暂无引力图数据。请先完成一次拆解，系统将自动生成初稿。</p>';
+    } else {
+      html += '<p class="muted">可拖拽节点调整位置，修改后自动保存。上次更新：' + (data.updatedAt ? new Date(data.updatedAt).toLocaleString('zh-CN') : '未知') + '</p>';
+      html += '<div class="chart-container" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 18px; padding: 8px;"><canvas id="gravityCanvas" width="400" height="400" style="width:100%; height:auto; cursor:grab;"></canvas></div>';
+      html += '<div class="nav"><button class="btn-secondary btn-small" id="resetGravityBtn">🔄 重置为初稿</button></div>';
+    }
+    $('anchorPanel').innerHTML = html;
+    if (data.nodes.length) {
+      setTimeout(() => drawGravity(data), 100);
+      $('resetGravityBtn')?.addEventListener('click', () => { generateGravityDraft(); renderGravity(); toast('已重置', '引力图已恢复为初稿'); });
+    }
+  }
+
+  function drawGravity(data) {
+    const canvas = $('gravityCanvas'); if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const w = rect.width - 16;
+    const h = window.innerWidth <= 600 ? 280 : 400;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const scaleX = w / 400; const scaleY = h / 400;
+    ctx.clearRect(0, 0, w, h);
+    data.edges.forEach(e => {
+      const src = data.nodes.find(n => n.id === e.source); const tgt = data.nodes.find(n => n.id === e.target);
+      if (!src || !tgt) return;
+      ctx.beginPath(); ctx.moveTo(src.x * scaleX, src.y * scaleY); ctx.lineTo(tgt.x * scaleX, tgt.y * scaleY);
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+      const mx = (src.x + tgt.x) / 2 * scaleX; const my = (src.y + tgt.y) / 2 * scaleY;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '11px system-ui'; ctx.textAlign = 'center'; ctx.fillText(e.type, mx, my);
+    });
+    data.nodes.forEach(n => {
+      const x = n.x * scaleX; const y = n.y * scaleY; const r = n.radius * Math.min(scaleX, scaleY);
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = n.color; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold ' + (n.type === 'core' ? '13' : '10') + 'px system-ui';
+      ctx.textAlign = 'center'; ctx.fillText(n.label, x, y + r + 16);
+    });
+    function getPoint(ev) {
+      const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+      const cy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+      const box = canvas.getBoundingClientRect();
+      return { x: (cx - box.left) / scaleX, y: (cy - box.top) / scaleY };
+    }
+    function startDrag(ev) {
+      const pt = getPoint(ev);
+      const hit = data.nodes.find(n => Math.hypot(n.x - pt.x, n.y - pt.y) < n.radius + 8);
+      if (!hit) return;
+      ev.preventDefault();
+      state.gravityDragNode = hit;
+      state.gravityDragOffset = { x: hit.x - pt.x, y: hit.y - pt.y };
+      canvas.style.cursor = 'grabbing';
+    }
+    function moveDrag(ev) {
+      if (!state.gravityDragNode) return;
+      ev.preventDefault();
+      const pt = getPoint(ev);
+      state.gravityDragNode.x = Math.max(20, Math.min(380, pt.x + state.gravityDragOffset.x));
+      state.gravityDragNode.y = Math.max(20, Math.min(380, pt.y + state.gravityDragOffset.y));
+      drawGravity(data);
+    }
+    function endDrag() {
+      if (!state.gravityDragNode) return;
+      data.updatedAt = new Date().toISOString();
+      writeObj(STORE.gravity, data);
+      state.gravityDragNode = null;
+      canvas.style.cursor = 'grab';
+      toast('布局已保存');
+    }
+    canvas.onmousedown = startDrag; canvas.onmousemove = moveDrag; canvas.onmouseup = endDrag; canvas.onmouseleave = endDrag;
+    canvas.ontouchstart = startDrag; canvas.ontouchmove = moveDrag; canvas.ontouchend = endDrag; canvas.ontouchcancel = endDrag;
+  }
+
+  function renderStarChart(containerEl) {
+    if (!containerEl) return;
+    const records = readArr(STORE.records);
+    const now = new Date(); const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now); d.setDate(d.getDate() - i);
+      days.push({ date: d, label: ['日','一','二','三','四','五','六'][d.getDay()], dateStr: d.toLocaleDateString('zh-CN'), pulses: [] });
+    }
+    records.forEach(r => {
+      const d = new Date(r.timestamp).toLocaleDateString('zh-CN');
+      const day = days.find(dd => dd.dateStr === d);
+      if (day && r.scanMatch?.emotions?.length) {
+        day.pulses.push({ emotion: r.scanMatch.emotion, category: r.scanMatch.emotionCategory, intensity: r.scanMatch.intensity || 5, raw: r.raw?.slice(0, 40) || '' });
+      }
+    });
+    const hasData = days.some(d => d.pulses.length > 0);
+    if (!hasData) {
+      containerEl.innerHTML = '<div class="muted" style="text-align:center;padding:20px;">📡 本周暂无脉冲记录。<br>你可以手动添加，或完成扫描/拆解后自动生成。<br><button class="btn-secondary btn-small" id="addPulseBtn" style="margin-top:8px;">＋ 添加脉冲</button></div>';
+      $('addPulseBtn')?.addEventListener('click', openPulseModal);
+      return;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = 700; canvas.height = 320;
+    canvas.style.width = '100%'; canvas.style.height = 'auto';
+    canvas.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+    canvas.style.borderRadius = '16px';
+    const ctx = canvas.getContext('2d');
+    const pad = { top: 30, right: 20, bottom: 40, left: 40 };
+    const cw = 700 - pad.left - pad.right; const ch = 320 - pad.top - pad.bottom;
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    for (let i = 1; i <= 9; i++) { const y = pad.top + ch - (i / 9) * ch; ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(700 - pad.right, y); ctx.stroke(); ctx.fillStyle = '#94a3b8'; ctx.font = '10px system-ui'; ctx.textAlign = 'right'; ctx.fillText(i, pad.left - 8, y + 4); }
+    for (let i = 0; i < 7; i++) { const x = pad.left + (i / 6) * cw; ctx.fillStyle = '#64748b'; ctx.font = '11px system-ui'; ctx.textAlign = 'center'; ctx.fillText(days[i].label, x, pad.top + ch + 20); }
+    const tooltip = document.createElement('div'); tooltip.className = 'chart-tooltip'; containerEl.appendChild(tooltip);
+    days.forEach((day, di) => { const x = pad.left + (di / 6) * cw; day.pulses.forEach((p, pi) => { const y = pad.top + ch - (p.intensity / 9) * ch; const color = emotionColors[p.category] || '#94a3b8'; ctx.beginPath(); ctx.arc(x, y + pi * 3, 8, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); }); });
+    containerEl.innerHTML = '';
+    containerEl.appendChild(canvas);
+    containerEl.appendChild(tooltip);
+    containerEl.classList.remove('star-chart-animate');
+    void containerEl.offsetWidth;
+    containerEl.classList.add('star-chart-animate');
+    containerEl.addEventListener('animationend', () => containerEl.classList.remove('star-chart-animate'), { once: true });
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const sx = 700 / rect.width; const sy = 320 / rect.height;
+      const mx = (e.clientX - rect.left) * sx; const my = (e.clientY - rect.top) * sy;
+      for (let di = 0; di < 7; di++) {
+        const x = pad.left + (di / 6) * cw; const day = days[di];
+        for (let pi = 0; pi < day.pulses.length; pi++) {
+          const y = pad.top + ch - (day.pulses[pi].intensity / 9) * ch + pi * 3;
+          if (Math.hypot(mx - x, my - y) < 12) {
+            const p = day.pulses[pi]; tooltip.textContent = day.dateStr + ' | ' + p.emotion + ' Lv.' + p.intensity;
+            tooltip.style.opacity = '1'; tooltip.style.left = (e.clientX - rect.left + 10) + 'px'; tooltip.style.top = (e.clientY - rect.top - 30) + 'px';
+            setTimeout(() => { tooltip.style.opacity = '0'; }, 2000); return;
+          }
+        }
+      }
+    });
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn-secondary btn-small'; addBtn.textContent = '＋ 添加脉冲'; addBtn.style.marginTop = '8px';
+    addBtn.addEventListener('click', openPulseModal);
+    containerEl.appendChild(addBtn);
+  }
+
+  function openPulseModal() {
+    const overlay = document.createElement('div'); overlay.className = 'modal-overlay';
+    overlay.innerHTML = '<div class="modal"><h3>＋ 添加脉冲</h3><div class="muted" style="margin:8px 0;">日期</div><input type="date" id="pulseDate" style="width:100%;padding:10px;border-radius:12px;border:2px solid #e2e8f0;font-family:inherit;"><div class="muted" style="margin:8px 0;">情绪词</div><input type="text" id="pulseWord" placeholder="如：委屈" style="width:100%;padding:10px;border-radius:12px;border:2px solid #e2e8f0;font-family:inherit;"><div class="muted" style="margin:8px 0;">强度等级 (1-9)</div><input type="number" id="pulseLevel" min="1" max="9" value="5" style="width:100%;padding:10px;border-radius:12px;border:2px solid #e2e8f0;font-family:inherit;"><div class="muted" style="margin:8px 0;">简短描述（可选）</div><input type="text" id="pulseDesc" placeholder="一句话描述" style="width:100%;padding:10px;border-radius:12px;border:2px solid #e2e8f0;font-family:inherit;"><div class="nav" style="margin-top:12px;"><button class="btn-primary" id="savePulseBtn">💾 保存</button><button class="btn-secondary" id="cancelPulseBtn">取消</button></div></div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    $('cancelPulseBtn').addEventListener('click', () => overlay.remove());
+    $('savePulseBtn').addEventListener('click', () => {
+      const date = $('pulseDate').value; const word = $('pulseWord').value.trim();
+      const level = parseInt($('pulseLevel').value) || 5; const desc = $('pulseDesc').value.trim();
+      if (!date || !word) { showFault('请至少填写日期和情绪词。'); return; }
+      const records = readArr(STORE.records);
+      records.push({ raw: desc, final: desc, timestamp: new Date(date).toISOString(), scanMatch: { raw: desc, event: null, emotions: [word], emotion: word, categories: ['手动录入'], emotionCategory: '手动录入', intensity: Math.min(9, Math.max(1, level)), metaphor: null } });
+      writeArr(STORE.records, records);
+      overlay.remove(); toast('脉冲已添加'); renderReview();
+    });
+  }
+
+  function renderReview() {
+    const reviews = readArr(STORE.reviews).slice().reverse().slice(0, 5);
+    let html = '<h3>📅 每周评审</h3><div class="chart-container" id="starChartContainer"></div><p class="muted">花3分钟回顾一下这周的状态。</p>';
+    html += '<textarea id="reviewQ1" placeholder="这周哪个行动效果最好？哪个没用？" rows="2" aria-label="评审问题1"></textarea>';
+    html += '<textarea id="reviewQ2" placeholder="你的故障信号发生了什么变化？" rows="2" aria-label="评审问题2" style="margin-top:8px;"></textarea>';
+    html += '<textarea id="reviewQ3" placeholder="下周坚持什么？调整什么？放弃什么？" rows="2" aria-label="评审问题3" style="margin-top:8px;"></textarea>';
+    html += '<button class="btn-primary" id="saveReviewBtn" style="margin-top:10px;">💾 保存本周评审</button>';
+    html += '<div class="muted" style="margin-top:16px;">📋 近期记录</div>';
+    html += reviews.length ? reviews.map(r => '<div class="card"><strong>' + new Date(r.timestamp).toLocaleDateString('zh-CN') + '</strong><p>' + esc(r.q1 || '') + '</p><p>' + esc(r.q2 || '') + '</p><p>' + esc(r.q3 || '') + '</p></div>').join('') : '<p class="muted" style="margin-top:8px;">暂无记录，写下你的第一次评审吧。</p>';
+    $('anchorPanel').innerHTML = html;
+    setTimeout(() => { const container = $('starChartContainer'); if (container) renderStarChart(container); }, 50);
+    $('saveReviewBtn')?.addEventListener('click', () => {
+      const q1 = $('reviewQ1')?.value || ''; const q2 = $('reviewQ2')?.value || ''; const q3 = $('reviewQ3')?.value || '';
+      if (!q1 && !q2 && !q3) { showFault('请至少填写一个问题的回答。'); return; }
+      const arr = readArr(STORE.reviews); arr.push({ timestamp: new Date().toISOString(), q1, q2, q3 });
+      writeArr(STORE.reviews, arr); toast('评审已记录', '坚持下去，你会看到变化'); renderReview();
+    });
+  }
+
+  function renderStress() {
+    let html = '<h3>🔧 压力测试</h3><p class="muted">选一个情境，看看你的方案能不能撑住。</p><button class="btn-secondary" id="randomStressBtn">🎲 随机抽一个情境</button><div id="stressList" style="margin-top:12px;">' + stressScenarios.map(s => '<div class="card" data-sid="' + s.id + '" role="button" tabindex="0"><strong>' + esc(s.title) + '</strong><p class="muted">' + esc(s.desc) + '</p></div>').join('') + '</div><div id="stressDetail"></div>';
+    $('anchorPanel').innerHTML = html;
+    $('randomStressBtn')?.addEventListener('click', () => { const rand = stressScenarios[Math.floor(Math.random() * stressScenarios.length)]; state.selectedScenario = rand.id; showStressDetail(rand); });
+    $('anchorPanel').querySelectorAll('[data-sid]').forEach(el => { el.addEventListener('click', () => { const s = stressScenarios.find(x => x.id === el.dataset.sid); if (s) { state.selectedScenario = s.id; showStressDetail(s); } }); });
+    if (state.selectedScenario) { const found = stressScenarios.find(x => x.id === state.selectedScenario); if (found) showStressDetail(found); }
+    function showStressDetail(s) {
+      const detailDiv = $('stressDetail'); if (!detailDiv) return;
+      detailDiv.innerHTML = '<div class="panel" style="margin-top:12px;"><p><strong>' + esc(s.title) + '</strong></p><p class="muted">' + esc(s.desc) + '</p><textarea id="stressAns1" placeholder="你现有的方案，在这种压力下能撑住吗？" rows="2" aria-label="压力测试回答1"></textarea><textarea id="stressAns2" placeholder="哪里可能会先断裂？" rows="2" style="margin-top:8px;" aria-label="压力测试回答2"></textarea><textarea id="stressPatch" placeholder="可选：设计一个补丁动作" rows="2" style="margin-top:8px;" aria-label="补丁动作"></textarea><button class="btn-primary" id="saveStressBtn" style="margin-top:10px;">💾 保存测试</button></div>';
+      detailDiv.scrollIntoView({ behavior: 'smooth' });
+      $('saveStressBtn')?.addEventListener('click', () => {
+        const patch = $('stressPatch')?.value || '';
+        const arr = readArr(STORE.stress);
+        arr.push({ timestamp: new Date().toISOString(), scenarioKey: s.id, answer1: $('stressAns1')?.value || '', answer2: $('stressAns2')?.value || '', patch });
+        writeArr(STORE.stress, arr);
+        toast('测试已保存', '你的方案又加固了一层');
+        if (patch.trim()) {
+          const plans = readArr(STORE.plans);
+          const activeItem = plans.map((plan, index) => ({ plan, index })).reverse().find(item => (item.plan.museumStatus || 'active') === 'active');
+          if (activeItem) {
+            const patchNote = '\n🔄 补丁记录（来自压力测试 ' + s.title + ', ' + new Date().toLocaleDateString('zh-CN') + '）：' + patch.trim();
+            plans[activeItem.index].museumNote = (plans[activeItem.index].museumNote || '') + patchNote;
+            writeArr(STORE.plans, plans);
+            toast('补丁已关联', '已写入最近的运行中方案');
+          } else {
+            toast('测试已保存', '暂无运行中方案可关联补丁');
+          }
+        }
+      });
+    }
+  }
+
+  function renderDataReport() {
+    let html = '<h3>📊 数据报告</h3><p class="muted">生成周报、导出或导入你的全部数据。</p>';
+    html += '<div class="card" style="margin-bottom:16px;"><h4>📅 本周情绪周报</h4><p class="muted">自动统计本周（周一至周日）的情绪数据，生成摘要报告。</p>';
+    html += '<button class="btn-primary" id="generateWeekReportBtn">📋 生成本周报告</button>';
+    html += '<div id="weekReportOutput" style="margin-top:12px;"></div></div>';
+    html += '<div class="card"><h4>💾 数据管理</h4><p class="muted">导出所有数据为 JSON 文件备份，或从备份文件恢复。</p>';
+    html += '<div class="nav"><button class="btn-secondary" id="exportDataBtn">📥 导出所有数据</button>';
+    html += '<button class="btn-danger" id="importDataBtn">📤 导入数据（替换）</button></div>';
+    html += '<input type="file" id="importFileInput" accept=".json" style="display:none;">';
+    html += '<p class="muted" style="margin-top:8px;">⚠️ 导入数据将清空并替换当前所有记录，操作不可恢复，请先导出备份。</p></div>';
+    $('anchorPanel').innerHTML = html;
+
+    $('generateWeekReportBtn')?.addEventListener('click', () => {
+      const records = readArr(STORE.records); const reviews = readArr(STORE.reviews); const stress = readArr(STORE.stress);
+      const now = new Date(); const dow = now.getDay();
+      const mon = new Date(now); mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1)); mon.setHours(0,0,0,0);
+      const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+      const weekRecords = records.filter(r => { const t = new Date(r.timestamp); return t >= mon && t <= sun; });
+      let intSum = 0, intCnt = 0; const emoCount = {};
+      weekRecords.forEach(r => { if (r.scanMatch?.intensity) { intSum += r.scanMatch.intensity; intCnt++; } const cat = r.scanMatch?.emotionCategory || '未知'; emoCount[cat] = (emoCount[cat] || 0) + 1; });
+      const avgInt = intCnt ? (intSum / intCnt).toFixed(1) : '—';
+      const mainEmo = Object.entries(emoCount).sort((a,b) => b[1] - a[1])[0];
+      const mainEmoStr = mainEmo ? mainEmo[0] + '(' + mainEmo[1] + '次)' : '无明显情绪';
+      const weekReviews = reviews.filter(r => { const t = new Date(r.timestamp); return t >= mon && t <= sun; });
+      const weekStress = stress.filter(r => { const t = new Date(r.timestamp); return t >= mon && t <= sun; });
+      const div = '━━━━━━━━━━━━━━━━━━';
+      let txt = div + '\n  📊 本周情绪周报\n' + div + '\n\n  时间范围：' + mon.toLocaleDateString('zh-CN') + ' — ' + sun.toLocaleDateString('zh-CN') + '\n';
+      txt += '  情绪脉冲数：' + weekRecords.length + '\n  平均强度：' + avgInt + ' / 9\n  主要情绪：' + mainEmoStr + '\n\n  ▎情绪分布\n';
+      Object.entries(emoCount).forEach(([k,v]) => { txt += '    ' + k + '：' + v + '次\n'; });
+      txt += '\n  ▎评审记录\n';
+      if (weekReviews.length) { weekReviews.forEach(r => { txt += '    [' + new Date(r.timestamp).toLocaleDateString('zh-CN') + ']\n    Q1: ' + (r.q1||'无') + '\n    Q2: ' + (r.q2||'无') + '\n    Q3: ' + (r.q3||'无') + '\n'; }); } else { txt += '    本周暂无评审。\n'; }
+      txt += '\n  ▎压力测试\n';
+      if (weekStress.length) { weekStress.forEach(s => { const sc = stressScenarios.find(x => x.id === s.scenarioKey); txt += '    ' + (sc ? sc.title : s.scenarioKey) + ' (' + new Date(s.timestamp).toLocaleDateString('zh-CN') + ')\n'; if(s.patch) txt += '    补丁：' + s.patch + '\n'; }); } else { txt += '    本周暂无压力测试。\n'; }
+      txt += '\n' + div;
+      $('weekReportOutput').innerHTML = '<div class="report-box">' + esc(txt) + '</div>';
+      toast('周报已生成', '可复制保存');
+    });
+
+    $('exportDataBtn')?.addEventListener('click', () => {
+      const data = { meta: { app: 'mind4s', version: 'v2.1', exportedAt: new Date().toISOString() } };
+      Object.values(STORE).forEach(key => { data[key] = key === STORE.gravity ? (readObj(key) || {}) : readArr(key); });
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url;
+      a.download = 'mind4s_backup_' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      toast('导出成功', '数据已保存为文件');
+    });
+
+    $('importDataBtn')?.addEventListener('click', () => $('importFileInput').click());
+    $('importFileInput')?.addEventListener('change', (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          const allowedKeys = Object.values(STORE);
+          if (!Object.keys(data).some(k => allowedKeys.includes(k))) { showFault('导入文件不包含有效的工具数据。'); return; }
+          if (!confirm('⚠️ 即将用导入的数据完全替换当前所有记录！\n\n当前数据将被清空且不可恢复。\n\n建议确认已导出备份后再继续。\n\n是否继续？')) return;
+          allowedKeys.forEach(key => localStorage.removeItem(key));
+          allowedKeys.forEach(key => {
+            if (!(key in data)) return;
+            if (key === STORE.gravity) {
+              const g = data[key] && typeof data[key] === 'object' ? data[key] : { nodes: [], edges: [], updatedAt: null };
+              localStorage.setItem(key, JSON.stringify(g));
+            } else {
+              localStorage.setItem(key, JSON.stringify(Array.isArray(data[key]) ? data[key] : []));
+            }
+          });
+          toast('导入成功', '数据已恢复，页面即将刷新');
+          setTimeout(() => location.reload(), 1500);
+        } catch (err) { showFault('文件格式错误，无法导入。'); }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  async function runScan() {
+    show('faultDisplay', false);
+    try {
+      scanner.allowSingleChar = $('singleCharSwitch')?.checked || false;
+      const res = scanner.scan($('userInput').value);
+      state.scanMatch = res.match;
+      $('scanOutput').textContent = res.output; $('editArea').value = res.output;
+      show('scanConfirm', true);
+      renderIntensityDial('scanIntensityDial', 'scanDialDescription', null, (level) => { if (state.scanMatch) state.scanMatch.intensity = level; });
+      $('scanConfirm').scrollIntoView({ behavior: 'smooth' });
+      toast('信号已捕获', '请确认或修改归纳结果');
+    } catch (e) { showFault(e.message); }
+  }
+
+  async function confirmScan() {
+    if (!state.scanMatch) { showFault('请先点击"记录故障现象"进行扫描。'); return; }
+    if (!state.scanMatch.intensity) state.scanMatch.intensity = 5;
+    const btn = $('confirmScanBtn'); if (btn) btn.disabled = true;
+    try {
+      const records = readArr(STORE.records);
+      records.push({ raw: $('userInput').value, final: $('editArea').value, timestamp: new Date().toISOString(), scanMatch: state.scanMatch });
+      writeArr(STORE.records, records);
+      show('saveSuccess', true); showStorageWarning('storageWarningScan', STORE.records);
+      setTimeout(() => {
+        hideAll(['scanModule']); show('disassembleModule', true);
+        state.dStage = 1; state.dSub = 1;
+        state.d = { name:'', body:'', time:'', place:'', reminder:'', memory:'', better:'', fact:'', feeling:'', tilt:'', friend:'' };
+        renderDisassemble(); if (btn) btn.disabled = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 600);
+    } catch (e) { if (btn) btn.disabled = false; showFault('存储失败: ' + e.message); }
+  }
+
+  async function confirmReport() {
+    try {
+      const reports = readArr(STORE.reports); reports.push({ report: $('reportEdit').value, timestamp: new Date().toISOString() });
+      writeArr(STORE.reports, reports);
+      localStorage.setItem(STORE.disassembly, JSON.stringify({ time: state.d.time, place: state.d.place }));
+      show('reportSuccess', true); showStorageWarning('storageWarningReport', STORE.reports);
+      setTimeout(() => {
+        hideAll(['disassembleModule']); show('constructModule', true);
+        state.cStage = 1; state.cSub = 1;
+        state.c = { person:'', actionDone:'', felt:'', thought:'', perspective:'', newPerspective:'', trigger:'', action:'', firstStep:'' };
+        renderConstruct(); window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 600);
+    } catch (e) { showFault('保存报告失败: ' + e.message); }
+  }
+
+  async function savePlan() {
+    try {
+      const plans = readArr(STORE.plans);
+      plans.push({ plan: $('creportEdit').value, structuredData: { ...state.c }, timestamp: new Date().toISOString(), museumStatus: 'active', museumNote: '' });
+      writeArr(STORE.plans, plans);
+      show('creportArea', false); show('creportSuccess', true);
+      showStorageWarning('storageWarningConstruct', STORE.plans);
+      $('creportSuccess').scrollIntoView({ behavior: 'smooth' });
+      toast('方案建造师', '方案已保存到工具箱');
+    } catch (e) { showFault('保存方案失败: ' + e.message); }
+  }
+
+  function renderWelcomeCard() {
+    const plans = readArr(STORE.plans); const container = $('welcomeCardContainer');
+    if (!container || !plans.length) return;
+    const latest = plans[plans.length - 1];
+    const dateStr = latest?.timestamp ? new Date(latest.timestamp).toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }) : '未知';
+    container.innerHTML = '<div class="welcome-card"><div class="info"><strong>👋 欢迎回来</strong><span class="muted">你的工具箱里已有 ' + plans.length + ' 份方案。上次更新：' + dateStr + '</span></div><button class="btn-primary" id="welcomeEnterBtn">📂 直接进入工具箱</button></div>';
+    $('welcomeEnterBtn')?.addEventListener('click', () => {
+      hideAll(['scanModule','disassembleModule','constructModule']); show('anchorModule', true);
+      renderAnchor('museum'); window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderWelcomeCard();
+    $('scanBtn')?.addEventListener('click', runScan);
+    $('confirmScanBtn')?.addEventListener('click', confirmScan);
+    $('userInput')?.addEventListener('keydown', e => { if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); runScan(); } });
+    $('confirmReportBtn')?.addEventListener('click', confirmReport);
+    $('backToScanBtn')?.addEventListener('click', () => { hideAll(['disassembleModule']); show('scanModule', true); show('scanConfirm', true); });
+    $('resetDisBtn')?.addEventListener('click', () => { state.d = { name:'', body:'', time:'', place:'', reminder:'', memory:'', better:'', fact:'', feeling:'', tilt:'', friend:'' }; state.dStage = 1; state.dSub = 1; renderDisassemble(); toast('已重置', '拆解数据已清空'); });
+    $('savePlanBtn')?.addEventListener('click', savePlan);
+    $('editPlanBtn')?.addEventListener('click', () => { show('creportArea', false); show('cContent', true); renderConstruct(); });
+    $('copyPlanBtn')?.addEventListener('click', () => { const t = $('creportEdit')?.value || ''; navigator.clipboard.writeText(t).then(() => toast('已复制')).catch(() => showFault('复制失败，请手动选中复制。')); });
+    $('goAnchorBtn')?.addEventListener('click', () => { hideAll(['constructModule']); show('anchorModule', true); renderAnchor('museum'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    $('viewPlanBtn')?.addEventListener('click', () => { show('creportArea', true); $('creportArea').scrollIntoView({ behavior: 'smooth' }); });
+    $('newMaintenanceBtn')?.addEventListener('click', () => { if (confirm('确定要开始新的保养吗？当前未保存的进度将丢失。')) location.reload(); });
+    $('backToDisBtn')?.addEventListener('click', () => { hideAll(['constructModule']); show('disassembleModule', true); show('reportArea', true); });
+    $('resetConBtn')?.addEventListener('click', () => { state.c = { person:'', actionDone:'', felt:'', thought:'', perspective:'', newPerspective:'', trigger:'', action:'', firstStep:'' }; state.cStage = 1; state.cSub = 1; renderConstruct(); toast('已重置', '建构数据已清空'); });
+    document.querySelectorAll('.tab').forEach(t => { t.addEventListener('click', () => renderAnchor(t.dataset.tab)); });
+    showStorageWarning('storageWarningScan', STORE.records);
+    showStorageWarning('storageWarningReport', STORE.reports);
+    showStorageWarning('storageWarningConstruct', STORE.plans);
+    console.log('🔧 清恒机电工程部·青少年心理建构工具 已就绪（全功能审计版）');
+    console.log('📋 数据存储在浏览器本地，不会上传到任何服务器。');
+  });
+})();
+</script>
+</body>
+</html>
