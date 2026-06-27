@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.5, minimum-scale=0.8">
+  <title>清恒·青少年心理建构工具</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #ffffff; --bg-subtle: #fafafa; --surface: #ffffff;
+      --line: #e5e7eb; --line-strong: #d1d5db; --text: #111827; --text-secondary: #374151; --muted: #6b7280;
+      --danger: #dc2626; --danger-light: #fef2f2; --success: #16a34a; --success-light: #f0fdf4;
+      --warning-light: #fffbeb; --radius-sm: 12px; --radius: 16px; --radius-lg: 20px; --transition: 0.2s ease;
+    }
+
+    body {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 20px 96px;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+      color: var(--text);
+      background: var(--bg-subtle);
+      line-height: 1.7;
+      -webkit-tap-highlight-color: transparent;
+    }
+    h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.3px; color: var(--text); margin-bottom: 0.5rem; }
+    h2, h3 { font-weight: 650; color: var(--text); margin: 0.5rem 0 0.6rem; }
+    p { margin: 0.4rem 0; color: var(--text-secondary); font-size: 0.94rem; }
+    .muted { color: var(--muted); font-size: 0.82rem; }
+    .step-title {
+      font-size: 1.2rem; font-weight: 700; color: var(--text); padding-left: 14px;
+      border-left: 4px solid var(--primary); background: transparent; border-radius: 0; margin-bottom: 0.5rem;
+    }
+    .panel {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+      padding: 24px 28px 28px; margin: 20px 0; box-shadow: none; transition: border-color var(--transition);
+    }
+    .panel:hover { border-color: var(--line-strong); }
+    textarea, .phrase-editor {
+      width: 100%; font-family: inherit; font-size: 0.94rem; padding: 14px 16px;
+      border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff;
+      transition: border-color var(--transition); resize: vertical; color: var(--text); line-height: 1.6;
+    }
+    textarea:focus, .phrase-editor:focus-within {
+      border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+    }
+    textarea::placeholder { color: var(--muted); }
+    .phrase-editor { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; padding: 14px 16px; min-height: 52px; background: #fff; }
+    .token { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px; background: var(--bg-subtle); border-radius: 40px; padding: 8px 16px; border: 1px solid var(--line); transition: border-color var(--transition); }
+    .token:focus-within { border-color: var(--primary); }
+    .fixed { color: var(--text-secondary); user-select: none; white-space: nowrap; font-weight: 500; font-size: 0.9rem; }
+    .editable-mid { min-width: 4.5em; border-bottom: 2px dashed var(--line-strong); outline: none; padding: 2px 8px; color: var(--primary); font-weight: 550; transition: border-color var(--transition); border-radius: 4px; font-size: 0.94rem; display: inline-block; }
+    .editable-mid:focus { border-bottom-color: var(--primary); background: rgba(37,99,235,0.03); }
+    .editable-mid:empty::before { content: attr(data-placeholder); color: var(--muted); font-weight: 400; }
+    button { background: #fff; border: 1px solid var(--line); padding: 10px 22px; border-radius: 999px; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all var(--transition); color: var(--text); font-family: inherit; user-select: none; white-space: nowrap; }
+    button:hover { background: var(--bg-subtle); border-color: var(--line-strong); }
+    button:active { transform: scale(0.97); }
+    button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+    .btn-secondary { background: #fff; border: 1px solid var(--line); color: var(--text); }
+    .btn-secondary:hover { background: var(--bg-subtle); }
+    .btn-danger { background: #fff; color: var(--danger); border: 1px solid #fecaca; }
+    .btn-danger:hover { background: var(--danger-light); }
+    .btn-small { padding: 6px 16px; font-size: 0.78rem; }
+    .hints, .bubbles { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; }
+    .hint, .bubble, .tag { background: #fff; padding: 7px 15px; border-radius: 999px; font-size: 0.8rem; cursor: pointer; transition: all var(--transition); border: 1px solid var(--line); color: var(--text-secondary); font-weight: 500; }
+    .hint:hover, .bubble:hover { background: var(--bg-subtle); border-color: var(--primary); color: var(--primary); }
+    .tag.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 650; }
+    .output-box, .report-box { background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 16px 18px; border: 1px solid var(--line); white-space: pre-wrap; font-size: 0.88rem; margin: 12px 0; line-height: 1.7; color: var(--text-secondary); font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace; }
+    .success-box { background: var(--success-light); border: 1px solid #bbf7d0; border-left: 4px solid var(--success); padding: 14px 18px; border-radius: var(--radius-sm); color: #166534; margin: 12px 0; font-weight: 500; }
+    .fault-box { background: var(--danger-light); border: 1px solid #fecaca; border-left: 4px solid var(--danger); padding: 14px 18px; border-radius: var(--radius-sm); color: #991b1b; font-weight: 500; }
+    .reference-box { background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 12px 18px; font-size: 0.84rem; border: 1px solid var(--line); color: var(--text-secondary); margin: 12px 0; }
+    .roadmap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 16px 0 10px; justify-content: space-between; }
+    .milestone { text-align: center; cursor: default; color: var(--muted); min-width: 64px; font-size: 0.78rem; transition: var(--transition); padding: 4px; position: relative; }
+    .milestone .icon { font-size: 1.6rem; display: block; margin-bottom: 4px; transition: var(--transition); }
+    .milestone.current { color: var(--primary); font-weight: 700; }
+    .milestone.done { color: var(--success); cursor: pointer; }
+    .milestone.done:hover { color: #15803d; }
+    .milestone.done::after { content: "✓"; position: absolute; top: -6px; right: -6px; background: var(--success); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; line-height: 16px; font-weight: bold; }
+    .connector { flex: 1; height: 2px; background: var(--line); border-radius: 2px; min-width: 20px; transition: var(--transition); }
+    .connector.done { background: var(--success); }
+    .tabs { display: flex; gap: 6px; margin: 16px 0 10px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+    .tab { padding: 8px 16px; background: #fff; border-radius: 999px; cursor: pointer; font-size: 0.85rem; font-weight: 550; border: 1px solid var(--line); color: var(--text-secondary); transition: all var(--transition); white-space: nowrap; flex-shrink: 0; }
+    .tab:hover { border-color: var(--primary); color: var(--primary); }
+    .tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 8px; cursor: pointer; transition: border-color var(--transition); }
+    .card:hover { border-color: var(--line-strong); }
+    .card-extra { display: none; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+    .card.expanded .card-extra { display: block; }
+    .toast { position: fixed; bottom: 24px; right: 20px; background: var(--text); color: #fff; padding: 12px 24px; border-radius: 999px; font-size: 0.85rem; z-index: 1200; font-weight: 500; pointer-events: none; opacity: 0; transform: translateY(8px); transition: opacity 0.2s ease, transform 0.2s ease; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+    .welcome-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .welcome-card .info { flex: 1; min-width: 200px; }
+    .intensity-dial { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 12px 0; }
+    .dial-dot { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; transition: all 0.15s ease; border: 2px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; color: #fff; user-select: none; }
+    .dial-dot:hover { transform: scale(1.08); }
+    .dial-dot.selected { transform: scale(1.12); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .dial-description { text-align: center; min-height: 36px; padding: 6px; font-size: 0.84rem; color: var(--muted); transition: all 0.2s ease; }
+
+    /* 桌面端右侧固定调试日志栏 */
+    .debug-sidebar {
+      display: none;
+    }
+    .debug-sidebar-toggle {
+      display: none;
+    }
+
+    /* 移动端齿轮触发器（桌面端隐藏） */
+    .debug-trigger {
+      position: fixed; bottom: 20px; right: 20px; z-index: 999; width: 40px; height: 40px; border-radius: 50%;
+      background: #fff; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; cursor: pointer; transition: all var(--transition);
+    }
+    .debug-trigger.active { box-shadow: 0 0 0 4px rgba(245,158,11,0.35); }
+    .debug-trigger:hover { border-color: var(--line-strong); }
+
+    /* 移动端调试面板 */
+    .debug-panel {
+      position: fixed; bottom: 72px; right: 20px; z-index: 998; background: #fff; border-radius: var(--radius);
+      border: 1px solid var(--line); padding: 18px 20px; width: 320px; max-height: 70vh; overflow-y: auto; display: none;
+    }
+    .debug-panel.visible { display: block; }
+
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; }
+    .toggle-label { font-size: 0.85rem; color: var(--text); }
+    .toggle-switch {
+      width: 40px; height: 22px; border-radius: 11px; background: var(--line); position: relative; cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .toggle-switch.on { background: var(--primary); }
+    .toggle-switch::after {
+      content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%;
+      background: #fff; transition: transform 0.2s ease;
+    }
+    .toggle-switch.on::after { transform: translateX(18px); }
+    .debug-status { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+    /* 日志查看器 */
+    .log-viewer { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+    .log-list {
+      background: #1e293b; border-radius: 10px; padding: 10px; max-height: 280px; overflow-y: auto;
+      font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace; font-size: 0.72rem; line-height: 1.6; color: #e2e8f0;
+    }
+    .log-item { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.06); white-space: pre-wrap; }
+    .log-item .log-line { margin: 1px 0; }
+    .log-item .log-module { color: #60a5fa; }
+    .log-item .log-action { color: #fbbf24; }
+    .log-item .log-highlight { color: #f87171; }
+    .log-item .log-data { color: #94a3b8; }
+    .log-item .log-indent1 { padding-left: 12px; }
+    .log-item .log-indent2 { padding-left: 24px; }
+    .log-viewer-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+    /* ============================================================
+       桌面端布局（最小宽度 1024px）
+       ============================================================ */
+    @media (min-width: 1024px) {
+      body {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        min-height: 100vh;
+      }
+      .main-content {
+        flex: 1;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 32px 28px 96px;
+      }
+      /* 桌面端：隐藏移动端齿轮和面板 */
+      .debug-trigger { display: none; }
+      .debug-panel { display: none !important; }
+
+      /* 桌面端：右侧固定日志栏 */
+      .debug-sidebar {
+        display: flex;
+        flex-direction: column;
+        width: 340px;
+        min-width: 340px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        border-left: 1px solid var(--line);
+        padding: 20px 18px;
+        overflow-y: auto;
+      }
+      .debug-sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .debug-sidebar-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text);
+      }
+      .debug-sidebar .log-viewer {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .debug-sidebar .log-list {
+        flex: 1;
+        max-height: none;
+        min-height: 200px;
+      }
+    }
+
+    /* 移动端 */
+    @media (max-width: 600px) {
+      body { padding: 16px 10px 72px; }
+      h1 { font-size: 1.35rem; }
+      .connector { display: none; }
+      .roadmap { justify-content: space-around; }
+      .milestone .icon { font-size: 1.3rem; }
+      .panel { padding: 16px 16px 20px; border-radius: var(--radius); }
+      .step-title { font-size: 1.1rem; }
+      button { padding: 8px 16px; font-size: 0.82rem; }
+      .phrase-editor { padding: 10px 12px; }
+      .token { padding: 6px 12px; }
+      .dial-dot { width: 46px; height: 46px; }
+      .debug-panel { width: 280px; right: 10px; bottom: 68px; }
+      .debug-trigger { right: 10px; bottom: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 桌面端：主内容区 -->
+<div class="main-content" id="mainContent">
+
+<h1 id="mainTitle">清恒·青少年心理建构工具</h1>
+<div id="welcomeCardContainer"></div>
+<p id="mainSubtitle" style="margin-bottom:1.2rem;"></p>
+<div id="faultDisplay" class="fault-box" style="display:none;" role="alert"></div>
+
+<section id="scanModule" class="panel">
+  <div class="step-title" id="scanTitle"></div>
+  <p id="scanDesc"></p>
+  <textarea id="userInput" rows="3" placeholder="" aria-label="描述你的困扰"></textarea>
+  <div class="muted" style="margin-top:6px;"><label style="cursor:pointer;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="singleCharSwitch"> 实验模式：单字匹配</label></div>
+  <div class="nav"><button class="btn-primary" id="scanBtn">📡 记录故障现象</button></div>
+  <div id="scanConfirm" style="display:none;">
+    <h3 id="scanConfirmTitle">✏️ 确认和修改</h3>
+    <p class="muted" id="scanConfirmDesc"></p>
+    <div id="scanOutput" class="output-box"></div>
+    <textarea id="editArea" rows="3" aria-label="编辑归纳结果"></textarea>
+    <h4 style="margin-top:12px;">📊 情绪强度等级</h4>
+    <p class="muted">请根据真实感受选择一个强度等级：</p>
+    <div id="scanIntensityDial" class="intensity-dial"></div>
+    <div id="scanDialDescription" class="dial-description"></div>
+    <button class="btn-primary" id="confirmScanBtn" style="margin-top:8px;">确认并进入故障分型</button>
+  </div>
+  <div id="saveSuccess" class="success-box" style="display:none;"></div>
+</section>
+
+<section id="disassembleModule" class="panel" style="display:none;">
+  <div class="step-title" id="disTitle"></div>
+  <p id="disDesc"></p>
+  <div id="dRoadmap" class="roadmap"></div>
+  <div class="muted">💡 点击已完成步骤可返回修改</div>
+  <div class="nav">
+    <button class="btn-secondary" id="backToScanBtn">← 返回上一步</button>
+    <button class="btn-secondary" id="resetDisBtn">🔄 重新拆解</button>
+  </div>
+  <div class="reference-box"><strong>📋 当前梳理：</strong><span id="referenceText"></span></div>
+  <div id="dContent"></div>
+  <div id="reportArea" style="display:none;">
+    <div class="step-title">📋 分型报告</div>
+    <div id="reportContent" class="report-box"></div>
+    <textarea id="reportEdit" rows="6" aria-label="编辑分型报告"></textarea>
+    <button class="btn-primary" id="confirmReportBtn">确认并进入下一步</button>
+  </div>
+  <div id="reportSuccess" class="success-box" style="display:none;"></div>
+</section>
+
+<section id="constructModule" class="panel" style="display:none;">
+  <div class="step-title" id="conTitle"></div>
+  <p id="conDesc"></p>
+  <div id="cRoadmap" class="roadmap"></div>
+  <div class="muted">💡 点击已完成步骤可返回修改</div>
+  <div class="nav">
+    <button class="btn-secondary" id="backToDisBtn">← 返回上一步</button>
+    <button class="btn-secondary" id="resetConBtn">🔄 重置建构</button>
+  </div>
+  <div class="reference-box"><strong>📦 当前方案：</strong><span id="constructReferenceText"></span></div>
+  <div id="cContent"></div>
+  <div id="creportArea" style="display:none;">
+    <div class="step-title">📋 我的改变方案</div>
+    <div id="creportContent" class="report-box"></div>
+    <textarea id="creportEdit" rows="6" aria-label="编辑改变方案"></textarea>
+    <div class="nav">
+      <button class="btn-primary" id="savePlanBtn">💾 保存方案</button>
+      <button class="btn-secondary" id="editPlanBtn">✏️ 重新修改</button>
+      <button class="btn-secondary" id="copyPlanBtn">📋 一键复制</button>
+    </div>
+  </div>
+  <div id="creportSuccess" class="success-box" style="display:none;"></div>
+</section>
+
+<section id="anchorModule" class="panel" style="display:none;">
+  <div class="step-title" id="anchorTitle"></div>
+  <p id="anchorDesc"></p>
+  <div class="tabs" role="tablist">
+    <span class="tab active" data-tab="museum">📦 协议博物馆</span>
+    <span class="tab" data-tab="gravity">🌌 引力图</span>
+    <span class="tab" data-tab="review">📅 每周评审</span>
+    <span class="tab" data-tab="stress">🔧 压力测试</span>
+    <span class="tab" data-tab="report">📊 数据报告</span>
+  </div>
+  <div id="anchorPanel"></div>
+</section>
+
+</div><!-- /main-content -->
+
+<!-- 桌面端：右侧固定日志栏 -->
+<aside class="debug-sidebar" id="debugSidebar">
+  <div class="debug-sidebar-header">
+    <h3>🔍 调试工具</h3>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="toggle-label" style="font-size:0.78rem;">调试</span>
+      <div class="toggle-switch" id="debugToggleDesktop"></div>
+    </div>
+  </div>
+  <div class="debug-status" id="debugStatusDesktop" style="margin-bottom:8px;">当前状态：已关闭</div>
+  <div class="log-viewer">
+    <div class="log-list" id="logListDesktop"><div style="color:#64748b;text-align:center;padding:12px;">暂无日志</div></div>
+    <div class="log-viewer-actions">
+      <button class="btn-secondary btn-small" id="clearLogBtnDesktop">清空日志</button>
+      <button class="btn-secondary btn-small" id="copyLogBtnDesktop">📋 复制全部</button>
+    </div>
+  </div>
+</aside>
+
+<!-- 移动端：齿轮触发器 -->
+<div class="debug-trigger" id="debugTrigger" title="调试工具">⚙</div>
+<!-- 移动端：弹出调试面板 -->
+<div class="debug-panel" id="debugPanel">
+  <div style="font-weight:600;font-size:0.9rem;margin-bottom:8px;">🔍 调试工具</div>
+  <div class="toggle-row">
+    <span class="toggle-label">调试模式</span>
+    <div class="toggle-switch" id="debugToggle"></div>
+  </div>
+  <div class="debug-status" id="debugStatus">当前状态：已关闭</div>
+  <div class="log-viewer">
+    <div class="log-list" id="logList"><div style="color:#64748b;text-align:center;padding:12px;">暂无日志</div></div>
+    <div class="log-viewer-actions">
+      <button class="btn-secondary btn-small" id="clearLogBtn">清空日志</button>
+      <button class="btn-secondary btn-small" id="copyLogBtn">📋 复制全部</button>
+    </div>
+  </div>
+  <div style="text-align:right;margin-top:8px;"><button class="btn-secondary btn-small" id="debugCloseBtn">关闭面板</button></div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  const CONFIG = {
+    brand: {
+      title: '清恒·青少年心理建构工具',
+      subtitle: '欢迎来到你的专属心灵保养车间。按照 {step1} → {step2} → {step3} → {step4} 四个流程，为你的内心做一次点检与迭代。',
+      welcomeMessage: '👋 欢迎回来，你的工具箱里已有 {n} 份方案。'
+    },
+    modules: {
+      scan: { name:'扫描', title:'🔍 第一步 · 描述"故障现象"', desc:'最近哪个"零件"让你觉得不对劲？' },
+      disassemble: { name:'拆解', title:'🔧 第二步 · 故障分型', desc:'把"故障现象"拆成信号、目的和强度。' },
+      construct: { name:'建构', title:'🔨 第三步 · 制定保养方案', desc:'为自己设计一份可以在现实中启动的小方案。' },
+      anchor: { name:'锚定', title:'⚓ 第四步 · 锚定与迭代', desc:'保养方案不是终点。这里是成长评审套件。' }
+    },
+    palette: {
+      brand: '#2563eb',
+      intensity: ['#93C5FD','#7DD3FC','#67E8F9','#6EE7B7','#FACC15','#FDBA74','#FB923C','#F87171','#F97316'],
+      emotion: {
+        '喜悦满足类':'#fbbf24','平静安宁类':'#60a5fa','愤怒不满类':'#f87171',
+        '悲伤难过类':'#a78bfa','恐惧焦虑类':'#fb923c','愧疚羞耻类':'#f472b6',
+        '嫉妒厌倦类':'#34d399','惊讶疑惑类':'#fcd34d','纠结惆怅类':'#94a3b8',
+        '压抑/不适类':'#475569','复杂的情绪波动':'#64748b','手动录入':'#2563eb'
+      }
+    },
+    emotions: {
+      '喜悦满足类':['开心','高兴','快乐','满足','自豪','轻松','安心','踏实','爽','乐','喜','暖','欣慰','雀跃'],
+      '平静安宁类':['平静','安静','宁静','淡定','从容','释然','安稳','平和'],
+      '愤怒不满类':['生气','愤怒','不满','不爽','窝火','憋屈','烦躁','烦','怒','气','恨','怨','火大','恼火'],
+      '悲伤难过类':['痛苦','难过','伤心','悲伤','失落','低落','委屈','压抑','心酸','emo','丧','苦','酸','想哭','难受'],
+      '恐惧焦虑类':['害怕','恐惧','焦虑','紧张','慌张','心慌','不安','着急','慌','怕','急','担忧'],
+      '愧疚羞耻类':['愧疚','羞愧','羞耻','自责','后悔','尴尬','丢脸','尬','过意不去'],
+      '嫉妒厌倦类':['嫉妒','羡慕','厌烦','厌倦','无聊','疲惫','累','困','没劲','乏'],
+      '惊讶疑惑类':['惊讶','疑惑','迷茫','茫然','懵','愣','晕','不解'],
+      '纠结惆怅类':['纠结','矛盾','无奈','遗憾','糟心','闹心','空','堵','闷','乱','不知所措']
+    },
+    negators: ['不','没','无','非','别'],
+    events: ['实训','车间','机床','工件','考试','考证','师傅','同学','班主任','家里','就业','实习','未来','工资','被批评','挨骂','吵架','矛盾','冲突'],
+    metaphors: [
+      { keys:['下雨','雨','淋雨','潮湿'], category:'悲伤难过类', text:'你描述的感觉像心里下着雨，潮湿、阴冷。', q:'这场心里的雨是绵绵细雨还是倾盆大雨？' },
+      { keys:['雾','看不清','路口','十字路口','迷雾'], category:'纠结惆怅类', text:'你描述的感觉像被雾困住，看不清路。', q:'如果没有人催你，你最想去的方向是哪一个？' }
+    ],
+    feelings: {
+      '喜悦满足类':'这份感觉像灯亮了，心里有一点热和力量。',
+      '平静安宁类':'这份感觉像机器稳定运转，节奏稳稳的。',
+      '愤怒不满类':'这股火像胸口堵着一团热气，想找一个出口。',
+      '悲伤难过类':'这份难过像心里压了块铁，提不起劲。',
+      '恐惧焦虑类':'这份紧张像警报器一直响，身体在提醒你小心。',
+      '愧疚羞耻类':'这份自责像脸上发热，心里反复回放那一幕。',
+      '嫉妒厌倦类':'这份疲惫像钻头磨钝了，还在转，但很吃力。',
+      '惊讶疑惑类':'这份懵像系统突然卡顿。',
+      '纠结惆怅类':'这份纠结像雾里走路，看不清下一步。',
+      '压抑/不适类':'你的感受里有些欲言又止的东西，像被按下去又浮上来的浮漂。'
+    },
+    intensityLevels: [
+      { name:'呼吸般的存在', desc:'隐约可察，如自己的呼吸声，几乎与背景融为一体。' },
+      { name:'课间走廊的喧哗', desc:'能清晰听到，但不会干扰你专注手头的事。' },
+      { name:'突然响起的上课铃', desc:'全身一激灵，注意力被瞬间抓取，但很快适应。' },
+      { name:'体育课后的心跳', desc:'感觉强烈，脉搏砰砰作响，需要刻意调整呼吸。' },
+      { name:'考场上最后五分钟的冲刺', desc:'全神贯注，时间感扭曲，身体紧绷，手心出汗。' },
+      { name:'重要演讲前的候场时刻', desc:'心跳如鼓，思绪翻腾，感觉下一秒就要被推上舞台。' },
+      { name:'目睹意外发生瞬间的空白', desc:'巨大而突然的震惊，让大脑"嗡"一声，一片空白。' },
+      { name:'无法抑制的剧烈生理反应', desc:'如痛哭到颤抖、愤怒到砸墙，身体几乎接管控制。' },
+      { name:'完全淹没的峰值体验', desc:'感觉、思绪、世界全部被一种强烈的感受吞噬。' }
+    ],
+    stressScenarios: [
+      { id:'S01', title:'当众被批评', desc:'在公开场合被指出错误，所有人都在看你。' },
+      { id:'S02', title:'重要考试前夜', desc:'明天就是关键考试，躺在床上怎么也睡不着。' },
+      { id:'S03', title:'被误解', desc:'你明明没有做错，却被认为是责任人。' },
+      { id:'S04', title:'计划完全失败', desc:'你花了很多时间准备的方案被直接否决。' },
+      { id:'S05', title:'被拿来和别人比较', desc:'有人说"你看看人家，再看看你自己"。' },
+      { id:'S06', title:'对未来感到迷茫', desc:'所有人都在谈论未来，你完全不知道自己想去哪里。' }
+    ],
+    safetyKeywords: ['打人','打架','打砸','揍','报复','砸烂','伤害自己','自残','冲过去','骂回去'],
+    placeholders: {
+      'd.name':'给情绪起个名字','d.body':'身体位置','d.time':'首次出现时间',
+      'd.place':'当时场景','d.reminder':'它想提醒我什么','d.memory':'过去的类似经历',
+      'd.better':'如果它消失会变好什么','d.fact':'实际上当时发生的事',
+      'd.feeling':'我心里感受到的是','d.tilt':'天平向哪边倾斜','d.friend':'我会对朋友说',
+      'c.action':'我的新行为策略','c.firstStep':'我的第一步动作'
+    },
+    prompts: {
+      scan: { inputPlaceholder:'例如：师傅当众指出我的工件尺寸超差，我当时特别委屈，甚至有点想躲开。', confirmTitle:'✏️ 确认和修改', confirmDesc:'根据你的描述，系统初步归纳如下，你可自由修改：' },
+      feedback: { scanSaved:'✅ 故障现象已记录，进入拆解环节...', reportSaved:'✅ 故障分型报告已保存，即将进入制定保养方案。', planSaved:'✅ 你的现实改变方案已保存。' }
+    },
+    _DEBUG_DEFAULT: false
+  };
+
+  const STORE_KEYS = {
+    records:'framework_records', reports:'framework_reports', plans:'framework_plans',
+    reviews:'framework_reviews', stress:'framework_stress', gravity:'framework_gravity',
+    disassembly:'framework_disassembly'
+  };
+  const DEBUG_KEY = 'framework_debug';
+
+  const state = {
+    scanMatch:null, dStage:1, dSub:1, cStage:1, cSub:1,
+    d:{name:'',body:'',time:'',place:'',reminder:'',memory:'',better:'',fact:'',feeling:'',tilt:'',friend:''},
+    c:{person:'',actionDone:'',felt:'',thought:'',perspective:'',newPerspective:'',trigger:'',action:'',firstStep:''},
+    selectedScenario:null, gravityDragNode:null, gravityDragOffset:{x:0,y:0},
+    museumManageMode:false, debugEnabled:false
+  };
+
+  const logBuffer = [];
+  const MAX_LOG = 200;
+
+  const $=id=>document.getElementById(id);
+  const esc=str=>String(str??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]||m);
+  const readArr=key=>{try{return JSON.parse(localStorage.getItem(key)||'[]')||[];}catch(e){return[];}};
+  const writeArr=(key,val)=>{try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}};
+  const readObj=key=>{try{return JSON.parse(localStorage.getItem(key)||'null');}catch(e){return null;}};
+  const writeObj=(key,val)=>{try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}};
+  const show=(id,yes=true)=>{const el=$(id);if(el)el.style.display=yes?'block':'none';};
+  const hideAll=ids=>ids.forEach(id=>show(id,false));
+
+  function debugLog(level, lines) {
+    if (!state.debugEnabled) return;
+    const flat = Array.isArray(lines) ? lines : [lines];
+    flat.forEach(line => console.log(line));
+    logBuffer.push({ lines: flat, time: Date.now() });
+    if (logBuffer.length > MAX_LOG) logBuffer.shift();
+    renderLogList();
+  }
+
+  function renderLogList() {
+    const listDesktop = $('logListDesktop');
+    const listMobile = $('logList');
+    const list = listDesktop || listMobile;
+    if (!list) return;
+    if (logBuffer.length === 0) {
+      list.innerHTML = '<div style="color:#64748b;text-align:center;padding:12px;">暂无日志</div>';
+      return;
+    }
+    list.innerHTML = logBuffer.map(entry => {
+      return '<div class="log-item">' + entry.lines.map(line => {
+        let cls = '';
+        if (line.startsWith('  ')) cls = 'log-indent1';
+        else if (line.startsWith('    ')) cls = 'log-indent2';
+        let content = line.trimStart();
+        content = content.replace(/\[(.*?)\]/g, '<span class="log-module">[$1]</span>');
+        content = content.replace(/→ (.*)/g, '→ <span class="log-action">$1</span>');
+        content = content.replace(/⚠ (.*)/g, '⚠ <span class="log-highlight">$1</span>');
+        content = content.replace(/🔴 (.*)/g, '🔴 <span class="log-highlight">$1</span>');
+        content = content.replace(/: (.*)$/g, ': <span class="log-data">$1</span>');
+        return '<div class="log-line '+cls+'">'+content+'</div>';
+      }).join('')+'</div>';
+    }).join('');
+    list.scrollTop = list.scrollHeight;
+  }
+
+  function toast(msg){
+    const existing=document.querySelector('.toast');if(existing)existing.remove();
+    const el=document.createElement('div');el.className='toast';el.textContent=msg;
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show'));
+    setTimeout(()=>{el.classList.remove('show');setTimeout(()=>{if(el.parentNode)el.remove();},200);},2400);
+  }
+
+  function showFault(msg){
+    const fd=$('faultDisplay');if(!fd)return;
+    fd.innerHTML='⚠️ '+esc(msg);show('faultDisplay',true);
+    fd.scrollIntoView({behavior:'smooth',block:'nearest'});
+    clearTimeout(fd._timeout);fd._timeout=setTimeout(()=>show('faultDisplay',false),5000);
+  }
+
+  function updateAllDebugUI(){
+    const toggles = [
+      { toggle: $('debugToggle'), status: $('debugStatus') },
+      { toggle: $('debugToggleDesktop'), status: $('debugStatusDesktop') }
+    ];
+    toggles.forEach(({ toggle, status }) => {
+      if (toggle) toggle.classList.toggle('on', state.debugEnabled);
+      if (status) status.textContent = '当前状态：' + (state.debugEnabled ? '已开启' : '已关闭');
+    });
+  }
+
+  // 移动端调试面板
+  function initMobileDebugPanel(){
+    try { state.debugEnabled = localStorage.getItem(DEBUG_KEY)==='true'; } catch(e) { state.debugEnabled = false; }
+    updateAllDebugUI();
+    const trigger=$('debugTrigger'),panel=$('debugPanel'),toggle=$('debugToggle'),closeBtn=$('debugCloseBtn');
+    if(trigger&&panel){
+      trigger.addEventListener('click',e=>{e.stopPropagation();panel.classList.toggle('visible');});
+      document.addEventListener('click',e=>{if(panel.classList.contains('visible')&&!panel.contains(e.target)&&e.target!==trigger)panel.classList.remove('visible');});
+    }
+    if(toggle){toggle.addEventListener('click',()=>{state.debugEnabled=!state.debugEnabled;try{localStorage.setItem(DEBUG_KEY,state.debugEnabled);}catch(e){}updateAllDebugUI();toast(state.debugEnabled?'🔍 调试模式已开启':'调试模式已关闭');if(state.debugEnabled)debugLog('key',['[DEBUG] 调试模式已激活']);});}
+    if(closeBtn)closeBtn.addEventListener('click',()=>{if(panel)panel.classList.remove('visible');});
+    const clearBtn=$('clearLogBtn');if(clearBtn)clearBtn.addEventListener('click',()=>{logBuffer.length=0;renderLogList();toast('日志已清空');});
+    const copyBtn=$('copyLogBtn');if(copyBtn)copyBtn.addEventListener('click',()=>{const text=logBuffer.map(e=>e.lines.join('\n')).join('\n\n');navigator.clipboard.writeText(text).then(()=>toast('已复制')).catch(()=>showFault('复制失败'));});
+  }
+
+  // 桌面端调试侧边栏
+  function initDesktopDebugSidebar(){
+    const toggle = $('debugToggleDesktop');
+    const clearBtn = $('clearLogBtnDesktop');
+    const copyBtn = $('copyLogBtnDesktop');
+    if(toggle){toggle.addEventListener('click',()=>{state.debugEnabled=!state.debugEnabled;try{localStorage.setItem(DEBUG_KEY,state.debugEnabled);}catch(e){}updateAllDebugUI();toast(state.debugEnabled?'🔍 调试模式已开启':'调试模式已关闭');if(state.debugEnabled)debugLog('key',['[DEBUG] 调试模式已激活']);});}
+    if(clearBtn)clearBtn.addEventListener('click',()=>{logBuffer.length=0;renderLogList();toast('日志已清空');});
+    if(copyBtn)copyBtn.addEventListener('click',()=>{const text=logBuffer.map(e=>e.lines.join('\n')).join('\n\n');navigator.clipboard.writeText(text).then(()=>toast('已复制')).catch(()=>showFault('复制失败'));});
+  }
+
+  function renderIntensityDial(containerId,descId,currentLevel,onChange){
+    const container=$(containerId),descEl=$(descId);
+    if(!container)return;
+    container.innerHTML='';
+    CONFIG.intensityLevels.forEach((il,idx)=>{
+      const dot=document.createElement('div');
+      dot.className='dial-dot'+(idx+1===currentLevel?' selected':'');
+      dot.style.backgroundColor=CONFIG.palette.intensity[idx];
+      dot.textContent=idx+1;
+      dot.addEventListener('click',()=>{
+        container.querySelectorAll('.dial-dot').forEach(d=>d.classList.remove('selected'));
+        dot.classList.add('selected');
+        if(descEl)descEl.textContent='Lv.'+(idx+1)+' '+il.name+' — '+il.desc;
+        if(onChange)onChange(idx+1);
+      });
+      container.appendChild(dot);
+    });
+    if(descEl&&currentLevel){
+      const found=CONFIG.intensityLevels[currentLevel-1];
+      if(found)descEl.textContent='Lv.'+currentLevel+' '+found.name+' — '+found.desc;
+    }
+  }
+
+  class Scanner{
+    constructor(){this.allowSingleChar=false;}
+    scan(input){
+      const logs=[];
+      const text=input.trim();
+      logs.push('[SCAN] 原始输入: "'+text+'"');
+      if(!text)throw new Error('请输入描述');
+      if(text.length<2)throw new Error('请多写一点');
+      const metaphor=CONFIG.metaphors.find(m=>m.keys.some(k=>text.includes(k)))||null;
+      if(metaphor)logs.push('[SCAN] 隐喻匹配: '+metaphor.keys[0]+' → '+metaphor.category);
+      else logs.push('[SCAN] 隐喻匹配: 无');
+      const matches=[];
+      for(const[cat,words]of Object.entries(CONFIG.emotions)){
+        for(const w of words){
+          if(!this.allowSingleChar&&w.length===1)continue;
+          if(text.includes(w)&&!matches.some(m=>m.word===w)){
+            matches.push({word:w,category:cat});
+            logs.push('  [SCAN] 匹配到情绪词: "'+w+'" → 类别: '+cat);
+          }
+        }
+      }
+      logs.push('[SCAN] 匹配总数: '+matches.length+' 个');
+      if(!matches.length&&metaphor){matches.push({word:metaphor.keys[0],category:metaphor.category});logs.push('[SCAN] 兜底: 使用隐喻词填充');}
+      logs.push('[SCAN] 否定词检测开始...');
+      const toRemove=[];
+      matches.forEach(m=>{
+        const idx=text.indexOf(m.word);
+        logs.push('  [NEGATE] 检查: "'+m.word+'" 位置: '+idx);
+        if(idx>0){
+          const prefix=text.substring(Math.max(0,idx-6),idx);
+          logs.push('    前缀窗口(6字符): "'+prefix+'"');
+          let negatorCount=0;
+          const foundNegators=[];
+          CONFIG.negators.forEach(n=>{let pos=-1;while((pos=prefix.indexOf(n,pos+1))!==-1){negatorCount++;foundNegators.push(n);}});
+          logs.push('    前缀否定词数量: '+negatorCount+(foundNegators.length?' ('+foundNegators.join(', ')+')':''));
+          if(negatorCount>=2){toRemove.push(m);logs.push('    🔴 双重否定 → 剔除 "'+m.word+'"');}
+          else if(negatorCount===1){const negator=CONFIG.negators.find(n=>prefix.includes(n));m.negated=true;m.negator=negator;m.originalCategory=m.category;m.category='压抑/不适类';logs.push('    ⚠ 单重否定: "'+negator+'" → 类别改为: '+m.category);}
+          else{logs.push('    无否定词 → 保持原类别');}
+        }else{logs.push('    位置 <= 0，跳过否定检测');}
+      });
+      toRemove.forEach(m=>{const i=matches.indexOf(m);if(i!==-1)matches.splice(i,1);});
+      const emotions=matches.map(m=>m.negated&&m.negator?m.negator+m.word:m.word).slice(0,4);
+      logs.push('[SCAN] 最终情绪词: '+(emotions.length?emotions.join(', '):'无'));
+      const categories=[...new Set(matches.map(m=>m.category))];
+      logs.push('[SCAN] 类别: '+(categories.length?categories.join(', '):'无'));
+      const primaryCategory=categories[0]||'复杂的情绪波动';
+      logs.push('[SCAN] 主类别: '+primaryCategory);
+      let output=emotions.length?'识别到情绪信号：'+emotions.join('、')+'。':'感受到一种复杂的情绪。';
+      const event=CONFIG.events.find(e=>text.includes(e));
+      if(event){output='触发事件可能和"'+event+'"有关。'+output;logs.push('[SCAN] 触发事件: '+event);}
+      if(metaphor){output+='\n\n💬 '+metaphor.text;if(metaphor.q)output+='\n\n❓ '+metaphor.q;}
+      else if(CONFIG.feelings[primaryCategory])output+='\n\n💬 '+CONFIG.feelings[primaryCategory];
+      logs.push('[SCAN] 输出: '+output.replace(/\n/g,' '));
+      debugLog('key', logs);
+      return{output,match:{raw:text,event:event||null,emotions,emotion:emotions[0]||'复杂的情绪',categories,emotionCategory:primaryCategory,metaphor,intensity:null}};
+    }
+  }
+  const scanner=new Scanner();
+
+  function setRoadmap(containerId,labels,currentStage,onJump){
+    const container=$(containerId);if(!container)return;
+    container.innerHTML='';
+    labels.forEach(([icon,label],idx)=>{
+      const stage=idx+1,cls=stage<currentStage?'done':(stage===currentStage?'current':'');
+      const milestone=document.createElement('div');milestone.className='milestone '+cls;
+      milestone.dataset.stage=stage;
+      milestone.innerHTML='<span class="icon">'+icon+'</span><span class="label">'+label+'</span>';
+      container.appendChild(milestone);
+      if(idx<labels.length-1){const conn=document.createElement('div');conn.className='connector '+(stage<currentStage?'done':'');container.appendChild(conn);}
+    });
+    container.onclick=e=>{const milestone=e.target.closest('.milestone');if(!milestone)return;const s=Number(milestone.dataset.stage);if(s<=currentStage&&(milestone.classList.contains('done')||milestone.classList.contains('current')))onJump(s);};
+  }
+
+  function token(fixedBefore,key,placeholder,fixedAfter){
+    fixedAfter=fixedAfter||'';
+    return'<div class="phrase-editor"><span class="token">'+
+      '<span class="fixed">'+esc(fixedBefore)+'</span>'+
+      '<span class="editable-mid" contenteditable="true" data-key="'+esc(key)+'" data-placeholder="'+esc(placeholder)+'">'+esc(getValue(key))+'</span>'+
+      '<span class="fixed">'+esc(fixedAfter)+'</span>'+
+      '<button class="remove-btn" type="button" aria-label="清除">✕</button></span></div>';
+  }
+  function getValue(key){return key.startsWith('d.')?(state.d[key.slice(2)]||''):key.startsWith('c.')?(state.c[key.slice(2)]||''):'';}
+  function bindEditors(container){
+    if(!container)return;
+    container.querySelectorAll('.editable-mid').forEach(el=>{
+      el.removeEventListener('input',onInput);el.addEventListener('input',onInput);
+      function onInput(){const k=el.dataset.key,v=el.textContent.trim();if(k.startsWith('d.'))state.d[k.slice(2)]=v;if(k.startsWith('c.'))state.c[k.slice(2)]=v;updateReferences();}
+    });
+    container.querySelectorAll('.remove-btn').forEach(btn=>{btn.addEventListener('click',()=>{const t=btn.closest('.token');if(t)t.querySelectorAll('.editable-mid').forEach(m=>{m.textContent='';m.dispatchEvent(new Event('input',{bubbles:true}));});});});
+  }
+  function hintList(items,key){return'<div class="hints"><span class="muted">💡 快捷填入：</span>'+items.map(v=>'<span class="hint" data-fill="'+key+'" data-value="'+esc(v)+'">'+esc(v)+'</span>').join('')+'</div>';}
+  function bindHints(container){if(!container)return;container.querySelectorAll('[data-fill]').forEach(el=>{el.addEventListener('click',()=>{const t=document.querySelector('.editable-mid[data-key="'+el.dataset.fill+'"]');if(t){t.textContent=el.dataset.value;t.dispatchEvent(new Event('input',{bubbles:true}));t.focus();}});});}
+  function updateReferences(){
+    const ref=$('referenceText');if(ref){const e=state.scanMatch?.emotion||'这份感受';ref.innerHTML='情绪：'+esc(e)+'<br>信号：'+esc(state.d.name||'?')+' ('+esc(state.d.body||'位置')+') / '+esc(state.d.time||'时间')+' '+esc(state.d.place||'场景');}
+    const conRef=$('constructReferenceText');if(conRef){conRef.innerHTML='困境：'+esc(state.c.person||'某人')+' / '+esc(state.c.actionDone||'事件')+'<br>念头：'+esc(state.c.thought||'…');}
+  }
+
+  function renderDisassemble(){
+    setRoadmap('dRoadmap',[['📡','信号识别'],['🔍','目的探索'],['⚖️','强度匹配']],state.dStage,s=>{state.dStage=s;state.dSub=1;renderDisassemble();});
+    show('reportArea',false);show('dContent',true);
+    const emo=state.scanMatch?.emotion||'那份感受',p=CONFIG.placeholders;
+    let html='';
+    if(state.dStage===1&&state.dSub===1){html='<h3>信号识别 (1/2)</h3><p>给"'+esc(emo)+'"起个绰号：</p>'+token('我叫它','d.name',p['d.name'],'。')+token('它住在身体的','d.body',p['d.body'],'附近。')+hintList(['胸口','喉咙','太阳穴','胃像打结','肩膀发紧','后脑勺'],'d.body')+'<div class="nav"><button class="btn-secondary" data-next>下一步 →</button></div>';}
+    else if(state.dStage===1&&state.dSub===2){html='<h3>信号识别 (2/2)</h3><p>第一次出现是什么时候？</p>'+token('最早是在','d.time',p['d.time'],'。')+token('当时我正在','d.place',p['d.place'],'。')+'<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-done1>确认进入目的探索</button></div>';}
+    else if(state.dStage===2&&state.dSub===1){html='<h3>目的探索 (1/2)</h3><p>它在提醒你什么？</p>'+token('它在提醒我','d.reminder',p['d.reminder'],'。')+token('让我想起','d.memory',p['d.memory'],'。')+'<div class="nav"><button class="btn-secondary" data-prevstage>← 上一步</button><button class="btn-secondary" data-next>下一步 →</button></div>';}
+    else if(state.dStage===2&&state.dSub===2){html='<h3>目的探索 (2/2)</h3><p>如果它消失会变好什么？</p>'+token('如果它消失了，','d.better',p['d.better'],'。')+'<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-done2>确认进入强度匹配</button></div>';}
+    else if(state.dStage===3&&state.dSub===1){html='<h3>强度匹配 (1/2)</h3><p>请选择情绪强度等级，并比较"实际发生的事"和"你的感受强度"，看看天平向哪边倾斜。</p><div id="disIntensityDial" class="intensity-dial"></div><div id="disDialDescription" class="dial-description"></div>'+token('实际发生的事是','d.fact',p['d.fact'],'。')+token('我的感受是','d.feeling',p['d.feeling'],'。')+token('天平向','d.tilt',p['d.tilt'],'这边斜。')+'<div class="nav"><button class="btn-secondary" data-prevstage>← 上一步</button><button class="btn-secondary" data-next>下一步 →</button></div>';}
+    else if(state.dStage===3&&state.dSub===2){html='<h3>强度匹配 (2/2)</h3><p>你会对朋友说什么？</p>'+token('我会对他说：','d.friend',p['d.friend'],'。')+'<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-report>📋 生成分型报告</button></div>';}
+    $('dContent').innerHTML=html;
+    bindEditors($('dContent'));bindHints($('dContent'));
+    if(state.dStage===3&&state.dSub===1){renderIntensityDial('disIntensityDial','disDialDescription',state.scanMatch?.intensity||5,l=>{if(state.scanMatch)state.scanMatch.intensity=l;state.d.level=l;debugLog('key',['[DIS] 强度已更新: Lv.'+l]);toast('强度已更新');});}
+    const nxt=$('dContent').querySelector('[data-next]'); if(nxt) nxt.addEventListener('click',()=>{state.dSub=2;renderDisassemble();});
+    const prv=$('dContent').querySelector('[data-prev]'); if(prv) prv.addEventListener('click',()=>{state.dSub=1;renderDisassemble();});
+    const pvs=$('dContent').querySelector('[data-prevstage]'); if(pvs) pvs.addEventListener('click',()=>{state.dStage=Math.max(1,state.dStage-1);state.dSub=2;renderDisassemble();});
+    const dn1=$('dContent').querySelector('[data-done1]'); if(dn1) dn1.addEventListener('click',()=>{state.dStage=2;state.dSub=1;renderDisassemble();debugLog('key',['[DIS] 完成信号识别，进入目的探索']);});
+    const dn2=$('dContent').querySelector('[data-done2]'); if(dn2) dn2.addEventListener('click',()=>{state.dStage=3;state.dSub=1;renderDisassemble();debugLog('key',['[DIS] 完成目的探索，进入强度匹配']);});
+    const rpt=$('dContent').querySelector('[data-report]'); if(rpt) rpt.addEventListener('click',generateReport);
+  }
+
+  function generateReport(){
+    debugLog('key',['[DIS] 生成分型报告']);
+    const report='━━━━━━━━━━━━━━━━━━\n  📋 分型报告\n━━━━━━━━━━━━━━━━━━\n\n  我叫它'+(state.d.name||'这份感受')+'，在'+(state.d.body||'某处')+'附近。\n  最早在'+(state.d.time||'某个时候')+'，正在'+(state.d.place||'某处')+'。\n  它在提醒我'+(state.d.reminder||'照顾自己')+'。\n  实际发生的事是"'+(state.d.fact||'某件事')+'"，感受是"'+(state.d.feeling||'很强烈')+'"。\n  我会对朋友说：'+(state.d.friend||'先别急')+'。\n\n━━━━━━━━━━━━━━━━━━';
+    $('reportContent').textContent=report;$('reportEdit').value=report;
+    show('dContent',false);show('reportArea',true);$('reportArea').scrollIntoView({behavior:'smooth'});
+    writeObj(STORE_KEYS.gravity,{nodes:[{id:'core',label:state.d.name||'核心',type:'core',x:200,y:200,radius:30,color:CONFIG.palette.emotion[state.scanMatch?.emotionCategory]||'#fbbf24'}],edges:[],updatedAt:new Date().toISOString()});
+    debugLog('key',['[STORE] 写入引力图初稿']);
+  }
+
+  function renderConstruct(){
+    setRoadmap('cRoadmap',[['🎥','场景重现'],['🔍','视角转换'],['⚙️','行动设计']],state.cStage,s=>{state.cStage=s;state.cSub=1;renderConstruct();});
+    show('creportArea',false);show('cContent',true);
+    const p=CONFIG.placeholders;let html='';
+    if(state.cStage===1&&state.cSub===1){html='<h3>场景重现 (1/2)</h3>'+token('当时，','c.person',p['c.person'],'在场。')+token('对方说了/做了','c.actionDone',p['c.actionDone'],'。')+token('我感到','c.felt',p['c.felt'],'。')+'<div class="nav"><button class="btn-secondary" data-next>下一步 →</button></div>';}
+    else if(state.cStage===1&&state.cSub===2){html='<h3>场景重现 (2/2)</h3>'+token('我心里立刻想：','c.thought',p['c.thought'],'。')+'<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-done1>确认进入视角转换</button></div>';}
+    else if(state.cStage===2&&state.cSub===1){html='<h3>视角转换 (1/2)</h3>'+token('换个角度看，','c.perspective',p['c.perspective'],'。')+'<div class="nav"><button class="btn-secondary" data-prevstage>← 上一步</button><button class="btn-secondary" data-next>下一步 →</button></div>';}
+    else if(state.cStage===2&&state.cSub===2){html='<h3>视角转换 (2/2)</h3>'+token('我现在觉得：','c.newPerspective',p['c.newPerspective'],'。')+'<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-done2>确认进入行动设计</button></div>';}
+    else if(state.cStage===3&&state.cSub===1){html='<h3>行动设计 (1/2)</h3>'+token('当','c.trigger',p['c.trigger'],'的时候，')+'<div class="nav"><button class="btn-secondary" data-prevstage>← 上一步</button><button class="btn-secondary" data-next>下一步 →</button></div>';}
+    else if(state.cStage===3&&state.cSub===2){html='<h3>行动设计 (2/2)</h3><div class="muted">新行为：你打算怎么做？</div>'+token('我会：','c.action',p['c.action'],'。')+'<div class="muted" style="margin-top:12px;">第一步：哪怕只做这个也行</div>'+token('在那一刻，我先做到：','c.firstStep',p['c.firstStep'],'。')+'<div class="nav"><button class="btn-secondary" data-prev>← 上一步</button><button class="btn-primary" data-plan>📋 生成方案</button></div>';}
+    $('cContent').innerHTML=html;
+    bindEditors($('cContent'));bindHints($('cContent'));
+    const nxt=$('cContent').querySelector('[data-next]'); if(nxt) nxt.addEventListener('click',()=>{state.cSub=2;renderConstruct();});
+    const prv=$('cContent').querySelector('[data-prev]'); if(prv) prv.addEventListener('click',()=>{state.cSub=1;renderConstruct();});
+    const pvs=$('cContent').querySelector('[data-prevstage]'); if(pvs) pvs.addEventListener('click',()=>{state.cStage=Math.max(1,state.cStage-1);state.cSub=2;renderConstruct();});
+    const dn1=$('cContent').querySelector('[data-done1]'); if(dn1) dn1.addEventListener('click',()=>{state.cStage=2;state.cSub=1;renderConstruct();debugLog('key',['[CON] 完成场景重现，进入视角转换']);});
+    const dn2=$('cContent').querySelector('[data-done2]'); if(dn2) dn2.addEventListener('click',()=>{state.cStage=3;state.cSub=1;renderConstruct();debugLog('key',['[CON] 完成视角转换，进入行动设计']);});
+    const rpt=$('cContent').querySelector('[data-plan]'); if(rpt) rpt.addEventListener('click',generatePlan);
+  }
+
+  function generatePlan(){
+    const dangerous=CONFIG.safetyKeywords.some(k=>(state.c.action||'').includes(k)||(state.c.firstStep||'').includes(k));
+    if(dangerous){debugLog('key',['[SAFETY] ⚠ 检测到高风险关键词']);if(!confirm('⚠️ 行动包含可能激化冲突的词语。\n\n是否继续保存？'))return;}
+    debugLog('key',['[CON] 生成改变方案']);
+    const plan='━━━━━━━━━━━━━━━━━━\n  📋 我的改变方案\n━━━━━━━━━━━━━━━━━━\n\n  当时，'+(state.c.person||'某人')+'说了/做了'+(state.c.actionDone||'某件事')+'，我感到'+(state.c.felt||'感受')+'。\n  我心里想：'+(state.c.thought||'我可能又搞砸了')+'\n  当'+(state.c.trigger||'类似情况')+'的时候，我就'+(state.c.action||'先停下来')+'。\n  第一步：'+(state.c.firstStep||'深呼吸')+'。\n\n━━━━━━━━━━━━━━━━━━';
+    $('creportContent').textContent=plan;$('creportEdit').value=plan;
+    show('cContent',false);show('creportArea',true);$('creportArea').scrollIntoView({behavior:'smooth'});
+  }
+
+  function renderAnchor(tab){
+    state.museumManageMode=false;
+    document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('active',t.dataset.tab===tab);});
+    debugLog('verbose',['[ANCHOR] 切换标签页: '+tab]);
+    if(tab==='museum')renderMuseum();
+    else if(tab==='gravity')renderGravity();
+    else if(tab==='review')renderReview();
+    else if(tab==='stress')renderStress();
+    else if(tab==='report')renderDataReport();
+  }
+
+  function renderMuseum(){
+    const plans=readArr(STORE_KEYS.plans);
+    debugLog('key',['[MUSEUM] 加载方案: '+plans.length+' 条']);
+    if(!plans.length){$('anchorPanel').innerHTML='<h3>📦 协议博物馆</h3><p class="muted">暂无方案。</p>';return;}
+    const statusMap={active:'✅ 运行中',retired:'📦 已退役',iterated:'🔄 已迭代'};
+    let html='<div style="display:flex;align-items:center;justify-content:space-between;"><h3>📦 我的协议博物馆</h3><button class="btn-danger btn-small" id="toggleMuseumManageBtn">🗑️ 管理方案</button></div>';
+    if(state.museumManageMode){html+='<div class="inline-manage-bar"><p class="muted">选择要删除的方案：</p><div class="manage-list">';plans.forEach((p,i)=>{html+='<label><input type="checkbox" data-planidx="'+i+'">方案 '+(i+1)+' — '+new Date(p.timestamp).toLocaleDateString('zh-CN')+'</label>';});html+='</div><div class="nav"><button class="btn-danger btn-small" id="museumDeleteSelectedBtn">删除选中</button><button class="btn-secondary btn-small" id="cancelMuseumManageBtn">取消</button></div></div>';}
+    plans.slice().reverse().forEach((p,idx)=>{const realIdx=plans.length-1-idx,sd=p.structuredData||{};html+='<div class="card"><div><strong>'+esc(new Date(p.timestamp).toLocaleDateString('zh-CN'))+'</strong> <span class="muted">'+statusMap[p.museumStatus||'active']+'</span></div><div>'+esc((sd.person||'')+' / '+(sd.action||'').slice(0,35))+'</div><div class="card-extra"><pre style="white-space:pre-wrap;font-size:0.82rem;">'+esc(p.plan||'')+'</pre><div class="nav">'+Object.entries(statusMap).map(([k,v])=>'<span class="tag '+(p.museumStatus===k?'active':'')+'" data-status="'+k+'" data-planidx="'+realIdx+'">'+v+'</span>').join('')+'</div><textarea data-noteidx="'+realIdx+'" placeholder="备注" rows="2" style="margin-top:8px;width:100%;border-radius:12px;padding:8px;">'+esc(p.museumNote||'')+'</textarea></div></div>';});
+    $('anchorPanel').innerHTML=html;
+    const tglBtn=$('toggleMuseumManageBtn'); if(tglBtn) tglBtn.addEventListener('click',e=>{e.stopPropagation();state.museumManageMode=!state.museumManageMode;renderMuseum();});
+    const cancelBtn=$('cancelMuseumManageBtn'); if(cancelBtn) cancelBtn.addEventListener('click',()=>{state.museumManageMode=false;renderMuseum();});
+    const delBtn=$('museumDeleteSelectedBtn'); if(delBtn) delBtn.addEventListener('click',()=>{const checked=document.querySelectorAll('.inline-manage-bar input:checked');if(!checked.length){showFault('请选择方案');return;}if(!confirm('确定删除吗？'))return;const idxs=Array.from(checked).map(cb=>Number(cb.dataset.planidx)).sort((a,b)=>b-a);const arr=readArr(STORE_KEYS.plans);idxs.forEach(i=>arr.splice(i,1));writeArr(STORE_KEYS.plans,arr);debugLog('key',['[MUSEUM] 删除方案: '+idxs.length+' 条']);state.museumManageMode=false;renderMuseum();toast('已删除');});
+    document.querySelectorAll('#anchorPanel .card').forEach(c=>c.addEventListener('click',e=>{if(e.target.tagName==='TEXTAREA'||e.target.dataset.status)return;c.classList.toggle('expanded');}));
+    document.querySelectorAll('#anchorPanel [data-status]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();const arr=readArr(STORE_KEYS.plans),idx=Number(el.dataset.planidx);if(arr[idx]){arr[idx].museumStatus=el.dataset.status;writeArr(STORE_KEYS.plans,arr);renderMuseum();debugLog('key',['[MUSEUM] 状态变更: '+el.dataset.status]);}}));
+    document.querySelectorAll('#anchorPanel [data-noteidx]').forEach(el=>el.addEventListener('change',()=>{const arr=readArr(STORE_KEYS.plans),idx=Number(el.dataset.noteidx);if(arr[idx]){arr[idx].museumNote=el.value;writeArr(STORE_KEYS.plans,arr);}}));
+  }
+
+  function renderGravity(){
+    const data=readObj(STORE_KEYS.gravity)||{nodes:[],edges:[]};
+    $('anchorPanel').innerHTML='<h3>🌌 引力图</h3>'+(data.nodes.length?'<canvas id="gravityCanvas" width="400" height="400" style="background:#fafafa;border-radius:12px;border:1px solid #e5e7eb;"></canvas>':'<p class="muted">暂无数据，请先完成拆解。</p>');
+    if(data.nodes.length)setTimeout(()=>{const c=$('gravityCanvas');if(c){const ctx=c.getContext('2d');c.width=400;c.height=400;ctx.clearRect(0,0,400,400);data.nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.radius,0,2*Math.PI);ctx.fillStyle=n.color;ctx.fill();ctx.fillStyle='#111';ctx.fillText(n.label,n.x,n.y+n.radius+14);});debugLog('verbose',['[GRAVITY] 渲染引力图']);}},100);
+  }
+
+  function renderReview(){
+    $('anchorPanel').innerHTML='<h3>📅 每周评审</h3><textarea id="reviewQ1" placeholder="这周哪个行动效果最好？"></textarea><textarea id="reviewQ2" placeholder="故障信号变化？" style="margin-top:8px;"></textarea><textarea id="reviewQ3" placeholder="下周计划？" style="margin-top:8px;"></textarea><button class="btn-primary" id="saveReviewBtn" style="margin-top:8px;">💾 保存</button>';
+    const saveBtn=$('saveReviewBtn'); if(saveBtn) saveBtn.addEventListener('click',()=>{const arr=readArr(STORE_KEYS.reviews);arr.push({timestamp:new Date().toISOString(),q1:$('reviewQ1').value,q2:$('reviewQ2').value,q3:$('reviewQ3').value});writeArr(STORE_KEYS.reviews,arr);debugLog('key',['[REVIEW] 保存评审']);toast('已保存');});
+  }
+
+  function renderStress(){
+    let html='<h3>🔧 压力测试</h3><div>'+CONFIG.stressScenarios.map(s=>'<div class="card" data-sid="'+s.id+'"><strong>'+esc(s.title)+'</strong><p class="muted">'+esc(s.desc)+'</p></div>').join('')+'</div><div id="stressDetail"></div>';
+    $('anchorPanel').innerHTML=html;
+    document.querySelectorAll('#anchorPanel [data-sid]').forEach(el=>el.addEventListener('click',()=>{const s=CONFIG.stressScenarios.find(x=>x.id===el.dataset.sid);if(s){$('stressDetail').innerHTML='<div class="panel" style="margin-top:12px;"><p><strong>'+esc(s.title)+'</strong></p><p class="muted">'+esc(s.desc)+'</p><textarea id="stressPatch" placeholder="补丁动作（可选）"></textarea><button class="btn-primary" id="saveStressBtn" style="margin-top:8px;">💾 保存</button></div>';const saveBtn=$('saveStressBtn'); if(saveBtn) saveBtn.addEventListener('click',()=>{const arr=readArr(STORE_KEYS.stress);arr.push({timestamp:new Date().toISOString(),scenarioKey:s.id,patch:$('stressPatch').value});writeArr(STORE_KEYS.stress,arr);debugLog('key',['[STRESS] 保存测试: '+s.id]);toast('已保存');});}}));
+  }
+
+  function renderDataReport(){
+    $('anchorPanel').innerHTML='<h3>📊 数据报告</h3><div class="nav"><button class="btn-primary" id="exportDataBtn">📥 导出数据</button><button class="btn-secondary" id="importDataBtn">📤 导入数据</button></div><input type="file" id="importFileInput" accept=".json" style="display:none;">';
+    const exportBtn=$('exportDataBtn'); if(exportBtn) exportBtn.addEventListener('click',()=>{const data={};Object.values(STORE_KEYS).forEach(k=>{data[k]=k===STORE_KEYS.gravity?readObj(k):readArr(k);});const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='framework_backup.json';a.click();debugLog('key',['[REPORT] 导出数据']);toast('导出完成');});
+    const importBtn=$('importDataBtn'); if(importBtn) importBtn.addEventListener('click',()=>{const fileInput=$('importFileInput'); if(fileInput) fileInput.click();});
+    const fileInput=$('importFileInput'); if(fileInput) fileInput.addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);if(!Object.keys(data).some(k=>Object.values(STORE_KEYS).includes(k))){showFault('无效文件');return;}if(!confirm('⚠️ 导入将替换所有数据，是否继续？'))return;Object.values(STORE_KEYS).forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});Object.entries(data).forEach(([k,v])=>{if(Object.values(STORE_KEYS).includes(k)){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}});debugLog('key',['[REPORT] 导入数据']);toast('导入完成，刷新中');setTimeout(()=>location.reload(),1200);}catch(ex){showFault('文件格式错误');}};reader.readAsText(file);});
+  }
+
+  function runScan(){
+    show('faultDisplay',false);
+    try{
+      scanner.allowSingleChar=$('singleCharSwitch')?.checked||false;
+      const res=scanner.scan($('userInput').value);state.scanMatch=res.match;
+      $('scanOutput').textContent=res.output;$('editArea').value=res.output;
+      show('scanConfirm',true);renderIntensityDial('scanIntensityDial','scanDialDescription',null,l=>{if(state.scanMatch)state.scanMatch.intensity=l;});
+      toast('信号已捕获');
+    }catch(e){showFault(e.message);}
+  }
+  function confirmScan(){
+    if(!state.scanMatch)return;if(!state.scanMatch.intensity)state.scanMatch.intensity=5;
+    const btn=$('confirmScanBtn');if(btn)btn.disabled=true;
+    const records=readArr(STORE_KEYS.records);records.push({raw:$('userInput').value,final:$('editArea').value,timestamp:new Date().toISOString(),scanMatch:state.scanMatch});writeArr(STORE_KEYS.records,records);
+    debugLog('key',['[STORE] 写入扫描记录: '+records.length+' 条']);
+    $('saveSuccess').innerHTML=CONFIG.prompts.feedback.scanSaved;show('saveSuccess',true);
+    setTimeout(()=>{hideAll(['scanModule']);show('disassembleModule',true);state.dStage=1;state.dSub=1;renderDisassemble();if(btn)btn.disabled=false;window.scrollTo(0,0);},500);
+  }
+  function confirmReport(){
+    const reports=readArr(STORE_KEYS.reports);reports.push({report:$('reportEdit').value,timestamp:new Date().toISOString()});writeArr(STORE_KEYS.reports,reports);
+    debugLog('key',['[STORE] 写入分型报告']);
+    $('reportSuccess').innerHTML=CONFIG.prompts.feedback.reportSaved;show('reportSuccess',true);
+    setTimeout(()=>{hideAll(['disassembleModule']);show('constructModule',true);state.cStage=1;state.cSub=1;renderConstruct();window.scrollTo(0,0);},500);
+  }
+  function savePlan(){
+    const plans=readArr(STORE_KEYS.plans);
+    plans.push({plan:$('creportEdit').value,structuredData:{...state.c},timestamp:new Date().toISOString(),museumStatus:'active',museumNote:''});
+    writeArr(STORE_KEYS.plans,plans);
+    debugLog('key',['[STORE] 写入方案: '+plans.length+' 条']);
+    $('creportSuccess').innerHTML=CONFIG.prompts.feedback.planSaved+'<br><br><div class="nav">'+
+      '<button class="btn-primary" id="goAnchorBtn">⚓ 进入锚定模块</button>'+
+      '<button class="btn-secondary" id="viewPlanBtn">📄 查看完整方案</button>'+
+      '<button class="btn-primary" id="newMaintenanceBtn">🔄 开始新的保养</button></div>';
+    show('creportArea',false);show('creportSuccess',true);
+    const goAnchor=$('goAnchorBtn'); if(goAnchor) goAnchor.addEventListener('click',()=>{hideAll(['constructModule']);show('anchorModule',true);renderAnchor('museum');window.scrollTo(0,0);});
+    const viewPlan=$('viewPlanBtn'); if(viewPlan) viewPlan.addEventListener('click',()=>{show('creportArea',true);$('creportArea').scrollIntoView({behavior:'smooth'});});
+    const newMaint=$('newMaintenanceBtn'); if(newMaint) newMaint.addEventListener('click',()=>{if(confirm('确定重新开始吗？'))location.reload();});
+  }
+
+  function renderWelcomeCard(){
+    const plans=readArr(STORE_KEYS.plans);if(!plans.length)return;
+    const latest=plans[plans.length-1];
+    const msg=CONFIG.brand.welcomeMessage.replace('{n}',plans.length).replace('{date}',new Date(latest.timestamp).toLocaleDateString('zh-CN'));
+    const container=$('welcomeCardContainer');if(container){
+      container.innerHTML='<div class="welcome-card"><div class="info"><strong>'+msg+'</strong></div><button class="btn-primary" id="welcomeEnterBtn">📂 进入工具箱</button></div>';
+      const btn=$('welcomeEnterBtn');if(btn)btn.addEventListener('click',()=>{hideAll(['scanModule','disassembleModule','constructModule']);show('anchorModule',true);renderAnchor('museum');window.scrollTo(0,0);});
+    }
+  }
+
+  function safeBind(selector, event, handler){
+    const el = document.querySelector(selector);
+    if(el) el.addEventListener(event, handler);
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    try{
+      $('mainTitle').textContent=CONFIG.brand.title;
+      $('mainSubtitle').innerHTML=CONFIG.brand.subtitle.replace('{step1}',CONFIG.modules.scan.name).replace('{step2}',CONFIG.modules.disassemble.name).replace('{step3}',CONFIG.modules.construct.name).replace('{step4}',CONFIG.modules.anchor.name);
+      $('scanTitle').textContent=CONFIG.modules.scan.title;$('scanDesc').innerHTML=CONFIG.modules.scan.desc;
+      $('disTitle').textContent=CONFIG.modules.disassemble.title;$('disDesc').innerHTML=CONFIG.modules.disassemble.desc;
+      $('conTitle').textContent=CONFIG.modules.construct.title;$('conDesc').innerHTML=CONFIG.modules.construct.desc;
+      $('anchorTitle').textContent=CONFIG.modules.anchor.title;$('anchorDesc').innerHTML=CONFIG.modules.anchor.desc;
+      $('userInput').placeholder=CONFIG.prompts.scan.inputPlaceholder;
+    }catch(e){}
+    renderWelcomeCard();
+
+    // 初始化桌面端侧边栏
+    initDesktopDebugSidebar();
+    // 初始化移动端面板
+    initMobileDebugPanel();
+
+    safeBind('#scanBtn','click',runScan);safeBind('#confirmScanBtn','click',confirmScan);safeBind('#confirmReportBtn','click',confirmReport);safeBind('#savePlanBtn','click',savePlan);
+    safeBind('#editPlanBtn','click',()=>{show('creportArea',false);show('cContent',true);renderConstruct();});
+    safeBind('#copyPlanBtn','click',()=>{const t=$('creportEdit');if(t)navigator.clipboard.writeText(t.value||'');toast('已复制');});
+    safeBind('#backToScanBtn','click',()=>{hideAll(['disassembleModule']);show('scanModule',true);show('scanConfirm',true);});
+    safeBind('#resetDisBtn','click',()=>{state.d={name:'',body:'',time:'',place:'',reminder:'',memory:'',better:'',fact:'',feeling:'',tilt:'',friend:''};state.dStage=1;state.dSub=1;renderDisassemble();toast('已重置');});
+    safeBind('#backToDisBtn','click',()=>{hideAll(['constructModule']);show('disassembleModule',true);show('reportArea',true);});
+    safeBind('#resetConBtn','click',()=>{state.c={person:'',actionDone:'',felt:'',thought:'',perspective:'',newPerspective:'',trigger:'',action:'',firstStep:''};state.cStage=1;state.cSub=1;renderConstruct();toast('已重置');});
+    document.querySelectorAll('.tab').forEach(t=>{t.addEventListener('click',()=>renderAnchor(t.dataset.tab));});
+    debugLog('key',['[INIT] 框架已启动']);
+    console.log('清恒·青少年心理建构工具 已就绪');
+  });
+})();
+</script>
+</body>
+</html>
